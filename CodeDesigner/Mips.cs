@@ -35,14 +35,6 @@ namespace CodeDesigner
         public string Info { get; set; }
     }
 
-    public partial class Command
-    {
-        public int CommandID { get; set; }
-        public string Name { get; set; }
-        public string Syntax { get; set; }
-        public string Info { get; set; }
-    }
-
     public static class Placeholders
     {
         public static string[] EERegister { get; } = new string[] { "rt", "rs", "rd", "base" };
@@ -60,8 +52,6 @@ namespace CodeDesigner
         public List<Register> Registers { get; set; }
 
         public List<Instruction> Instructions { get; set; }
-
-        public List<Command> Commands { get; set; }
 
         private _Assembler Assembler { get; set; }
 
@@ -4490,27 +4480,10 @@ namespace CodeDesigner
                 RegisterID = 96
             });
 
-            var Commands = new List<Command>();
-
-            Commands.Add(new Command()
-            {
-                Name = "ADDRESS",
-                Syntax = "address $hex",
-                Info = "Address will set the assemblers addressing"
-            });
-
-            Commands.Add(new Command()
-            {
-                Name = "HEXCODE",
-                Syntax = "hexcode $hex",
-                Info = "hexcode will set a word at the current address"
-            });
-
             Assembler = new _Assembler()
             {
                 Instructions = Instructions,
-                Registers = Registers,
-                Commands = Commands
+                Registers = Registers
             };
 
             Disassembler = new _Disassembler()
@@ -4529,8 +4502,6 @@ namespace CodeDesigner
             public List<Instruction> Instructions { get; set; }
 
             public List<Register> Registers { get; set; }
-
-            public List<Command> Commands { get; set; }
 
             private Register FindRegisterByName(string name) => Registers.FirstOrDefault(x => x.Name.Equals(name));
 

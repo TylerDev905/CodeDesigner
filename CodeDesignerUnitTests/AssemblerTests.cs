@@ -31,7 +31,7 @@ namespace CodeDesignerUnitTests
             Assert.AreEqual("1c800001", Mips.Assemble("bgtz a0, $0008"));
             Assert.AreEqual("0c028000", Mips.Assemble("jal $000A0000"));
             Assert.AreEqual("03e00008", Mips.Assemble("jr ra"));
-            //Assert.AreEqual("0040f809", Mips.Assemble("jalr v0,"));
+            Assert.AreEqual("0040f809", Mips.Assemble("jalr v0,"));
             Assert.AreEqual("e60c0000", Mips.Assemble("swc1 $f12, $0000(s0)"));
             Assert.AreEqual("00000000", Mips.Assemble("nop"));
             Assert.AreEqual("40196800", Mips.Assemble("mfc0 t9, cause"));
