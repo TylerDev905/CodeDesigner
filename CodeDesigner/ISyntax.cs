@@ -57,6 +57,7 @@ namespace CodeDesigner
         public string Source { get; set; } = string.Empty;
         public Mips32 Mips { get; set; } = new Mips32();
         public List<string>Errors { get; set; } = new List<string>();
+        public bool CommentFlag { get; set; }
 
         public MipsSource(string source)
         {
@@ -84,7 +85,8 @@ namespace CodeDesigner
             {
                 if(!IsLabel(syntaxItem))
                     if(!IsTargetLabel(syntaxItem))
-                        IsOperation(syntaxItem);
+                        if (!IsComment(syntaxItems))
+                            IsOperation(syntaxItem);
                 ItemIndex++;
             }
             foreach (var error in Errors)
@@ -102,25 +104,60 @@ namespace CodeDesigner
             }
         }
   
-        public bool IsComment()
+        public bool IsComment(List<string> syntaxItems)
         {
             var multiLine = new string[]{ "/*", "*/" };
             var singleLine = "//";
+            var commentFound = false;
+            var commentBuffer = string.Empty;
+            var length = 0;
 
+            if (syntaxItems[ItemIndex].StartsWith(multiLine[0]))
+            {
+                var itemCount = SyntaxItems.Count();
+                var itemIndex = ItemIndex;
+
+                while (itemIndex < itemCount)
+                {
+                    if (syntaxItems[itemIndex].Contains(multiLine[1])) {
+                        commentFound = true;
+                        commentBuffer += syntaxItems[itemIndex];
+                    }
+                    else
+                        commentBuffer += syntaxItems[itemIndex];
+                    itemIndex++;
+                    length++;
+                }
+            }
+            else if (syntaxItems[ItemIndex].StartsWith(singleLine))
+            {
+                commentFound = true;
+                commentBuffer = syntaxItems[ItemIndex];
+                length = 1;
+            }
+
+            if (commentFound) {
+                SyntaxItems.Add(new Comment() {
+                    Text = commentBuffer,
+                    LineLength = length,
+                    LineNumber = ItemIndex
+                });
+                return true;
+            }
             return false;
         }
 
         public void IsOperation(string item)
         {
-            try {
-                SyntaxItems.Add(new Operation()
+            try { 
+                var operation = new Operation()
                 {
                     LineNumber = ItemIndex,
                     MemoryAddress = Address,
                     Data = Mips.Assemble(item)
-                });
-
-                Address += 4;
+                };
+                SyntaxItems.Add(operation);
+                Address += operation.ByteLength;
             }
             catch (ArgumentException e)
             {
@@ -139,6 +176,7 @@ namespace CodeDesigner
 
         public void IsCommand(string item)
         {
+            var commands = new string[] { "hexcode", "address", "setreg", "call", "print" };
             
         }
 

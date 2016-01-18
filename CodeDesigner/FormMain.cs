@@ -17,8 +17,9 @@ namespace CodeDesigner
             InitializeComponent();
 
             var source = "\t\taddiu sp, sp, $0080\n"
-                + ":Winning12"
-                + "\tsw a0, $0000(t0)\n"
+                + ":Winning12\n"
+                + @"\*\n Hello this is\n a test for a \ncomment \n*\"
+                + "\n\tsw a0, $0000(t0)\n"
                 + "\tlw t0, $0000(a0)\n";
 
             var mipsSource = new MipsSource(source);
