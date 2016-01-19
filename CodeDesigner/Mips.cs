@@ -4494,6 +4494,7 @@ namespace CodeDesigner
         }
 
         public string Assemble(string source) => Assembler.Assemble(source);
+        public string Assemble(string source, int? target = null, int label = 0, string text = "") => Assembler.Assemble(source, target, label, text);
     
         public string Disassemble(string code) => Disassembler.Disassemble(code);
 
@@ -4505,11 +4506,11 @@ namespace CodeDesigner
 
             private Register FindRegisterByName(string name) => Registers.FirstOrDefault(x => x.Name.Equals(name));
 
-            private List<Instruction> FindInstructionByName(string name) => Instructions.Where(x => x.Name.ToLower().Equals(name)).ToList();
+            public List<Instruction> FindInstructionByName(string name) => Instructions.Where(x => x.Name.ToLower().Equals(name)).ToList();
 
             private string ParseInstructionName(string line) => line.Replace(",", "").Split(new string[] { " " }, StringSplitOptions.None)[0];
 
-            private List<string> ParseArgs(string line) => line.Replace(",", "").Replace(")", "").Split(new string[] { " ", "(" }, StringSplitOptions.None).Skip(1).Take(4).ToList();
+            public List<string> ParseArgs(string line) => line.Replace(",", "").Replace(")", "").Split(new string[] { " ", "(" }, StringSplitOptions.None).Skip(1).Take(4).ToList();
 
             private string FormatRegister(string bin, int binIndex, string arg, string[] rule) => Placeholders.EERegister.Contains(rule[1])
                 || Placeholders.COP0Register.Contains(rule[1])
@@ -4550,12 +4551,32 @@ namespace CodeDesigner
                 ? Helper.InsertBin(binIndex, 26, bin, Helper.ZeroPad(Convert.ToString(Convert.ToInt32(Parse.WithRegex(operation, @"\$([a-f0-9]{8})"), 16) / 4, 2), 26))
                 : bin;
             
-            public string Assemble(string operation)
+            public string Assemble(string operation, int? target = null, int label = 0, string text = "")
             {
                 operation = operation.ToLower();
+                
                 var instruction = FindInstructionByName(ParseInstructionName(operation)).FirstOrDefault();
                 var operationArgs = ParseArgs(operation);
                 var syntaxArgs = ParseArgs(instruction.Syntax);
+
+                if (target != null)
+                {
+                    if (syntaxArgs.Contains(Placeholders.Call))
+                    {
+                        operation = operation.Replace($":{text.ToLower()}", $"${Helper.ZeroPad(Convert.ToString(label, 16), 8)}");
+                    }
+                    else {
+                        var value = 0;
+                        if (label > target)
+                            value = label - (int)target;
+                        else
+                            value = ((int)target - label + 2/ 4);
+                        var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
+                        operation = operation.Replace($":{text.ToLower()}", $"${offset.Substring(offset.Count() - 4, 4)}");
+                        /*Finish branch / immediate calculate*/
+                    }
+                }
+
                 var binary = instruction.InstructionBin;
 
                 var rules = Helper.SplitRules(instruction);

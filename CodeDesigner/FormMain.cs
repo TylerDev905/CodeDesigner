@@ -20,30 +20,16 @@ namespace CodeDesigner
 
             var mipsSource = new MipsSource(source);
             mipsSource.Parse();
+            Console.Write(mipsSource.ToCode());
 
-            var item1 = new MipsSource.Operation();
-            var item2 = new Command();
-            var item3 = new MipsSource.Comment();
-            var item4 = new Label();
+            var collection = new List<MipsSource.ISyntax>();
 
-            var collection = new List<ISyntax>();
-
-            collection.Add(item1);
-            collection.Add(item2);
-            collection.Add(item3);
-            collection.Add(item4);
-
-            foreach(var item in collection)
+            foreach(var item in mipsSource.SyntaxItems)
             {
                 var type = item.GetType();
                 Console.WriteLine(type);
-
-                if (typeof(Label) == type)
-                {
-                    Console.WriteLine("Label found");
-                }
             }
-
+            
         }
     }
 }
