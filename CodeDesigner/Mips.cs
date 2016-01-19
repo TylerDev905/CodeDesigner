@@ -4518,15 +4518,15 @@ namespace CodeDesigner
                     ? Helper.InsertBin(binIndex, Convert.ToInt32(rule[0]), bin, FindRegisterByName(arg)?.Bin)
                     : bin;
 
-            private string FormatImmediate(string bin, int binIndex, string operation, string syntax) => syntax.Contains(Placeholders.Immediate[0])
-                || syntax.Contains(Placeholders.Immediate[2]) 
-                || syntax.Contains(Placeholders.Branch) == false
+            private string FormatImmediate(string bin, int binIndex, string operation, string syntax) => syntax.Contains(Placeholders.Branch) == false
+                && syntax.Contains(Placeholders.Immediate[0])
+                || syntax.Contains(Placeholders.Immediate[1]) 
                     ? Helper.InsertBin(binIndex, 16, bin, Helper.ZeroPad(Helper.HexToBin(Parse.WithRegex(operation, @"\$([a-f0-9]{4,8})"), 16), 16))
                     : bin;
 
             private string FormatBranch(string bin, int binIndex, string operation, string syntax)
             {
-                if (!syntax.Contains(Placeholders.Immediate[1]) && syntax.Contains(Placeholders.Branch))
+                if (syntax.Contains(Placeholders.Immediate[1]) == false && syntax.Contains(Placeholders.Branch))
                 {
                     var offset = Convert.ToInt32(Parse.WithRegex(operation, @"\$([a-f0-9]{4})"), 16);
                     if (offset >= 32767)
