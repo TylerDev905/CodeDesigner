@@ -4533,8 +4533,10 @@ namespace CodeDesigner
                         var value = Convert.ToString(((65536 - offset) / 4) * -1, 2);
                         bin = Helper.InsertBin(binIndex, 16, bin, value.Substring(value.Count() - 16, 16));
                     }
-                    else
-                        bin = Helper.InsertBin(binIndex, 16, bin, Helper.ZeroPad(Convert.ToString((offset / 4) - 1, 16), 16));
+                    else {
+                        var value = Helper.ZeroPad(Convert.ToString((offset / 4) - 1, 2), 16);
+                        bin = Helper.InsertBin(binIndex, 16, bin, value);
+                    }
                 }
                 return bin;
             }
@@ -4551,35 +4553,38 @@ namespace CodeDesigner
                 ? Helper.InsertBin(binIndex, 26, bin, Helper.ZeroPad(Convert.ToString(Convert.ToInt32(Parse.WithRegex(operation, @"\$([a-f0-9]{8})"), 16) / 4, 2), 26))
                 : bin;
             
-            public string Assemble(string operation, int? target = null, int label = 0, string text = "")
+            public string PatchTargetLabels(string operation, List<string> syntaxArgs, int? target = null, int label = 0, string text = "")
+            {
+                if (target != null)
+                {
+                    if (syntaxArgs.Contains(Placeholders.Call))
+                        operation = operation.Replace($":{text.ToLower()}", $"${Helper.ZeroPad(Convert.ToString(label, 16), 8)}");
+                    else
+                    {
+                        var value = 0;
+                        if (label > target)
+                            value = (label - (int)target);
+                        else
+                            value = (((int)target - label) * -1) - 4;
+
+                        var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
+                        operation = operation.Replace($":{text.ToLower()}", $"${offset.Substring(offset.Count() - 4, 4)}");
+                    }
+                }
+                return operation;
+            }
+
+            public string Assemble(string operation, int? targetAddress = null, int labelAddress = 0, string labelText = "")
             {
                 operation = operation.ToLower();
                 
                 var instruction = FindInstructionByName(ParseInstructionName(operation)).FirstOrDefault();
                 var operationArgs = ParseArgs(operation);
                 var syntaxArgs = ParseArgs(instruction.Syntax);
-
-                if (target != null)
-                {
-                    if (syntaxArgs.Contains(Placeholders.Call))
-                    {
-                        operation = operation.Replace($":{text.ToLower()}", $"${Helper.ZeroPad(Convert.ToString(label, 16), 8)}");
-                    }
-                    else {
-                        var value = 0;
-                        if (label > target)
-                            value = label - (int)target;
-                        else
-                            value = ((int)target - label + 2/ 4);
-                        var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
-                        operation = operation.Replace($":{text.ToLower()}", $"${offset.Substring(offset.Count() - 4, 4)}");
-                        /*Finish branch / immediate calculate*/
-                    }
-                }
-
                 var binary = instruction.InstructionBin;
-
                 var rules = Helper.SplitRules(instruction);
+
+                operation = PatchTargetLabels(operation, syntaxArgs, targetAddress, labelAddress, labelText);
 
                 var i = 0;
                 var syntax = instruction.Syntax.ToLower();

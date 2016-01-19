@@ -354,7 +354,7 @@ namespace CodeDesigner
                     Text = text,
                     AddressCounter = AddressCounter
                 });
-                Logs.Add(($"Line {SyntaxItemIndex + 1}: Found Label [ {text} ] - 0x{Helper.ZeroPad(Convert.ToString(AddressCounter, 16), 8)}"));
+                Logs.Add(($"Line {SyntaxItemIndex + 1}: Found Target Label [ {text} ] - 0x{Helper.ZeroPad(Convert.ToString(AddressCounter, 16), 8)}"));
                 AddressCounter += 4; 
 
                 SyntaxItemIndex++;
