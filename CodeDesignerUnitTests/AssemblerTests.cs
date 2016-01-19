@@ -10,12 +10,15 @@ namespace CodeDesignerUnitTests
     [TestClass]
     public class MipsUnitTests
     {
+        public MipsSource MipsSource { get; set; }
         public Mips32 Mips { get; set; }
 
         [TestInitialize]
         public void Init()
         {
-            Mips = new Mips32();
+            var source = System.IO.File.ReadAllText(@"C:\Users\Tyler\Desktop\test.txt");
+            MipsSource = new MipsSource(source);
+            Mips = MipsSource.Mips;
         }
 
         [TestMethod]
@@ -54,6 +57,16 @@ namespace CodeDesignerUnitTests
             Assert.AreEqual("swc1 $f12, $0000(s0)", Mips.Disassemble("e60c0000"));
             Assert.AreEqual("nop", Mips.Disassemble("00000000"));
             Assert.AreEqual("mfc0 t9, cause", Mips.Disassemble("40196800"));
+        }
+
+        [TestMethod]
+        public void AssembleSource()
+        {
+            var expected = System.IO.File.ReadAllText(@"C:\Users\Tyler\Desktop\expected.txt").ToLower();
+            MipsSource.Parse();
+            var test = MipsSource.ToCode();
+
+            Assert.AreEqual(expected, MipsSource.ToCode());
         }
 
     }

@@ -16,20 +16,15 @@ namespace CodeDesigner
         {
             InitializeComponent();
 
-            var source = System.IO.File.ReadAllText(@"C:\Users\Tyler\Desktop\mips.txt");
+            var source = System.IO.File.ReadAllText(@"C:\Users\Tyler\Desktop\test.txt");
 
             var mipsSource = new MipsSource(source);
             mipsSource.Parse();
             Console.Write(mipsSource.ToCode());
 
-            var collection = new List<MipsSource.ISyntax>();
+            foreach (var log in mipsSource.Logs.OrderBy(x => x))
+                Console.WriteLine(log);
 
-            foreach(var item in mipsSource.SyntaxItems)
-            {
-                var type = item.GetType();
-                Console.WriteLine(type);
-            }
-            
         }
     }
 }

@@ -61,9 +61,6 @@ namespace CodeDesigner
                     else
                         break;
             }
-            foreach (var log in Logs)
-                Console.WriteLine(log);
-
         }
 
         public string ToCode()
@@ -75,24 +72,33 @@ namespace CodeDesigner
             {
                 var address = string.Empty;
                 var data = string.Empty;
+                var type = SyntaxItems[i].GetType();
 
-                if (SyntaxItems[i].GetType() != typeof(Label) && SyntaxItems[i].AddressCounter != null)
+                if (type != typeof(Label) && SyntaxItems[i].AddressCounter != null)
                     address = Helper.ZeroPad(Convert.ToString((int)SyntaxItems[i].AddressCounter, 16), 8);
 
-                if (SyntaxItems[i].GetType() == typeof(Operation))
+                if (type == typeof(Operation))
                     data = ((Operation)SyntaxItems[i]).Data;
 
-                if (SyntaxItems[i].GetType() == typeof(TargetLabel))
+                if (type == typeof(TargetLabel))
                 {
                     var target = ((TargetLabel)SyntaxItems[i]);
-                    if (target.IsOperation) {
-                        var label = Labels.Single(x => x.Text == target.Text);
-                        data = Mips.Assemble(target.Line, (int)target.AddressCounter, (int)label.AddressCounter, target.Text);
+                    try {
+                        if (target.IsOperation) {
+                            var label = Labels.Single(x => x.Text == target.Text);
+                            data = Mips.Assemble(target.Line, (int)target.AddressCounter, (int)label.AddressCounter, target.Text);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Logs.Add($"Line {target.LineNumber + 1}: Exception thrown - The target label was incorrectly formatted");
                     }
                 }
-
-                if (address != string.Empty && data != string.Empty)
-                    result += $"{address} {data}\n";
+                if (type == typeof(Hexcode))
+                    data = ((Hexcode)SyntaxItems[i]).Data;
+                
+                    if (address != string.Empty && data != string.Empty)
+                    result += $"{address} {data}\r\n";
             }
             return result;
         }
@@ -295,8 +301,29 @@ namespace CodeDesigner
             public int? AddressCounter { get; set; }
         }
 
+
+        public class Hexcode : ISyntax
+        {
+            public int LineNumber { get; set; }
+            public int ByteLength { get; set; } = 4;
+            public string Data { get; set; }
+            public int? AddressCounter { get; set; }
+        }
+
         public bool IsCommand(string item)
         {
+            var data = CodeDesigner.Parse.WithRegex(item, "([a-f0-9]{8})");
+            if (item.Contains("hexcode"))
+            {
+                SyntaxItems.Add(new Hexcode() {
+                    LineNumber = SyntaxItemIndex,
+                    AddressCounter = AddressCounter,
+                    Data = data
+                });
+                AddressCounter += 4;
+                SyntaxItemIndex++;
+                return true;
+            }
             return false;
         }
 
