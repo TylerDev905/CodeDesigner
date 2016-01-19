@@ -4519,7 +4519,8 @@ namespace CodeDesigner
                     : bin;
 
             private string FormatImmediate(string bin, int binIndex, string operation, string syntax) => syntax.Contains(Placeholders.Immediate[0])
-                || syntax.Contains(Placeholders.Immediate[2]) && syntax.Contains(Placeholders.Branch) == false
+                || syntax.Contains(Placeholders.Immediate[2]) 
+                || syntax.Contains(Placeholders.Branch) == false
                     ? Helper.InsertBin(binIndex, 16, bin, Helper.ZeroPad(Helper.HexToBin(Parse.WithRegex(operation, @"\$([a-f0-9]{4,8})"), 16), 16))
                     : bin;
 
