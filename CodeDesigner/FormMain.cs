@@ -16,18 +16,14 @@ namespace CodeDesigner
         {
             InitializeComponent();
 
-            var source = "\t\taddiu sp, sp, $0080\n"
-                + ":Winning12\n"
-                + @"\*\n Hello this is\n a test for a \ncomment \n*\"
-                + "\n\tsw a0, $0000(t0)\n"
-                + "\tlw t0, $0000(a0)\n";
+            var source = System.IO.File.ReadAllText(@"C:\Users\Tyler\Desktop\mips.txt");
 
             var mipsSource = new MipsSource(source);
             mipsSource.Parse();
 
-            var item1 = new Operation();
+            var item1 = new MipsSource.Operation();
             var item2 = new Command();
-            var item3 = new Comment();
+            var item3 = new MipsSource.Comment();
             var item4 = new Label();
 
             var collection = new List<ISyntax>();
