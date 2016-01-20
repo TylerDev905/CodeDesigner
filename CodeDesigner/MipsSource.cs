@@ -147,10 +147,7 @@ namespace CodeDesigner
         {
             if (line == string.Empty)
             {
-                ILineCollection.Add(new BlankLine()
-                {
-                    LineNumber = LineNumber
-                });
+                ILineCollection.Add(new BlankLine() { LineNumber = LineNumber });
                 LineNumber++;
                 return true;
             }
@@ -173,8 +170,28 @@ namespace CodeDesigner
             var commentBuffer = string.Empty;
             var lineSpan = 0;
 
+            // Is single line comment?
+            if (lines[LineNumber].Contains(SingleLine))
+            {
+                // Is the comment at the start of the string or beside syntax
+                if (lines[LineNumber].StartsWith(SingleLine))
+                {
+                    commentBuffer = lines[LineNumber];
+                    lineSpan = 1;
+                }
+                else
+                {
+                    var startIndex = lines[LineNumber].IndexOf(SingleLine);
+                    commentBuffer += lines[LineNumber].Substring(startIndex, lines[LineNumber].Length - startIndex);
+                    lines[LineNumber] = lines[LineNumber].Replace(commentBuffer, "").Trim(' ');
+                }
+                commentFound = true;
+            }
+
+            // Is multiline comment?
             if (lines[LineNumber].Contains(MultiLineStart))
             {
+                // Is the multiline comment finshed on this line?
                 if (lines[LineNumber].Contains(MultiLineEnd))
                 {
                     var startIndex = lines[LineNumber].IndexOf(MultiLineStart);
@@ -183,13 +200,13 @@ namespace CodeDesigner
                     lines[LineNumber] = lines[LineNumber].Replace(commentBuffer, "").Trim(' ');
                     commentFound = true;
                 }
-
-                var tempLineNumber = LineNumber;
-
                 try
                 {
+                    // find the end of the comment
+                    var tempLineNumber = LineNumber;
                     while (commentFound == false || tempLineNumber < LineCount - 1)
                     {
+                        // Is this the end of the comment?
                         if (lines[tempLineNumber].Contains(MultiLineEnd))
                         {
                             commentFound = true;
@@ -207,27 +224,11 @@ namespace CodeDesigner
                 }
                 catch
                 {
-                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The multi line comment is missing its closing indicator");
                     Exit = true;
+                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The multi line comment is missing its closing indicator");
                 }
             }
-
-            if (lines[LineNumber].Contains(SingleLine))
-            {
-                if (lines[LineNumber].StartsWith(SingleLine))
-                {
-                    commentBuffer = lines[LineNumber];
-                    lineSpan = 1;
-                }
-                else
-                {
-                    var startIndex = lines[LineNumber].IndexOf(SingleLine);
-                    commentBuffer += lines[LineNumber].Substring(startIndex, lines[LineNumber].Length - startIndex);
-                    lines[LineNumber] = lines[LineNumber].Replace(commentBuffer, "").Trim(' ');
-                }
-                commentFound = true;
-            }
-
+            // If a comment was found add it to the ILine collection
             if (commentFound)
             {
                 ILineCollection.Add(new Comment()
@@ -323,7 +324,6 @@ namespace CodeDesigner
             public List<string> AddressData { get; set; }
             public int Address { get; set; }
         }
-
 
         public class Hexcode : ILine
         {
