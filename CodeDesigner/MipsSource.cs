@@ -23,7 +23,7 @@ namespace CodeDesigner
 
         public Mips32 Mips { get; set; } = new Mips32();
         public static List<string> MipsArgTypes = new List<string> { "Branch", "Code", "Register", "Integer", "Immediate", "Call" };
-        public static List<string> Commands = new List<string> { "hexcode", "setreg", "call", "print"};
+        public static List<string> Commands = new List<string> { "hexcode", "setreg", "call", "print" };
 
         public static string LabelPattern = @"([_.a-z0-9]{3,15}):";
         public static string TargetPattern = @":([_.a-z0-9]{3,15})";
@@ -32,6 +32,7 @@ namespace CodeDesigner
         public static string MultiLineStart = "/*";
         public static string MultiLineEnd = "*/";
         public static string SingleLine = "//";
+
 
         public MipsSource(string source)
         {
@@ -73,25 +74,22 @@ namespace CodeDesigner
             var result = string.Empty;
             for (var i = 0; i < ILineCollection.Count(); i++)
             {
-                var address = string.Empty;
-                var addressData = string.Empty;
-
                 var iLine = ILineCollection[i];
                 var iLineType = iLine.GetType();
 
-                if (iLineType != typeof(AddressUpdate))
-                    address = Helper.ZeroPad(Convert.ToString(iLine.Address, 16), 8);
+                var address = Helper.ZeroPad(Convert.ToString(iLine.Address, 16), 8);
+                var addressData = string.Empty;
 
                 if (iLineType == typeof(Operation))
                     addressData = ((Operation)iLine).AddressData;
 
                 if (iLineType == typeof(TargetLabel))
                     addressData = TargetLabelAssemble(iLine);
-                
+
                 if (iLineType == typeof(Hexcode))
                     addressData = ((Hexcode)iLine).AddressData;
 
-                if (address != string.Empty && addressData != string.Empty)
+                if (addressData != string.Empty)
                     result += $"{address} {addressData}\r\n";
             }
             return result;
@@ -101,30 +99,37 @@ namespace CodeDesigner
         {
             var result = string.Empty;
             var target = ((TargetLabel)iLine);
-            var label = Labels.Single(x => x.Text == target.Text);
-            if (target.IsOperation)
+            try
             {
-                result = target.Line;
-                var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(result.ToUpper())));
-                var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
+                var label = Labels.Single(x => x.Text == target.Text);
+                if (target.IsOperation)
+                {
+                    result = target.Line;
+                    var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(result.ToUpper())));
+                    var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
 
-                if (syntaxArgs.Contains(Placeholders.Call))
-                {
-                    result = result.Replace($":{label.Text}", $"${Helper.ZeroPad(Convert.ToString(label.Address, 16), 8)}");
-                    return Mips.Assemble(result);
-                }
-                else
-                {
-                    var value = 0;
-                    if (label.Address > target.Address)
-                        value = (label.Address - target.Address);
+                    if (syntaxArgs.Contains(Placeholders.Call))
+                        result = result.Replace($":{label.Text}", $"${Helper.ZeroPad(Convert.ToString(label.Address, 16), 8)}");
                     else
-                        value = ((target.Address - label.Address) * -1) - 4;
+                    {
+                        var value = 0;
+                        if (label.Address > target.Address)
+                            value = (label.Address - target.Address);
+                        else
+                            value = ((target.Address - label.Address) * -1) - 4;
 
-                    var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
-                    result = result.Replace($":{label.Text}", $"${offset.Substring(offset.Count() - 4, 4)}");
+                        var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
+                        result = result.Replace($":{label.Text}", $"${offset.Substring(offset.Count() - 4, 4)}");
+                    }
                     return Mips.Assemble(result);
                 }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("Sequence contains more than one matching element"))
+                    Logs.Add($"Line {target.LineNumber + 1}: Exception thrown - The label that is being referenced contains more then one definition");
+                else
+                    Logs.Add($"Line {target.LineNumber + 1}: Exception thrown - The label that is being referenced does not exist");
             }
             return result;
         }
@@ -305,13 +310,12 @@ namespace CodeDesigner
                         LineNumber = LineNumber,
                         NewAddress = newAddress
                     });
-                    Address = newAddress;
+                    LineNumber++;
                 }
                 catch
                 {
                     Logs.Add($"Line {LineNumber + 1}: Exception thrown - The address update cannot be parsed");
                 }
-                LineNumber++;
                 return true;
             }
             return false;
@@ -335,14 +339,14 @@ namespace CodeDesigner
 
         public bool IsCommand(string item)
         {
-            var AddressData = CodeDesigner.Parse.WithRegex(item, WordPattern);
             if (item.Contains("hexcode"))
             {
+                var addressData = CodeDesigner.Parse.WithRegex(item, WordPattern);
                 ILineCollection.Add(new Hexcode()
                 {
                     LineNumber = LineNumber,
                     Address = Address,
-                    AddressData = AddressData
+                    AddressData = addressData
                 });
                 Address += 4;
                 LineNumber++;
