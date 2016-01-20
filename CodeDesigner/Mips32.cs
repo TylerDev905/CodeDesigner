@@ -4494,8 +4494,6 @@ namespace CodeDesigner
         }
 
         public string Assemble(string source) => Assembler.Assemble(source);
-        public string Assemble(string source, int? target = null, int label = 0, string text = "") => Assembler.Assemble(source, target, label, text);
-    
         public string Disassemble(string code) => Disassembler.Disassemble(code);
 
         private class _Assembler
@@ -4507,10 +4505,6 @@ namespace CodeDesigner
             private Register FindRegisterByName(string name) => Registers.FirstOrDefault(x => x.Name.Equals(name));
 
             public List<Instruction> FindInstructionByName(string name) => Instructions.Where(x => x.Name.ToLower().Equals(name)).ToList();
-
-            private string ParseInstructionName(string line) => line.Replace(",", "").Split(new string[] { " " }, StringSplitOptions.None)[0];
-
-            public List<string> ParseArgs(string line) => line.Replace(",", "").Replace(")", "").Split(new string[] { " ", "(" }, StringSplitOptions.None).Skip(1).Take(4).ToList();
 
             private string FormatRegister(string bin, int binIndex, string arg, string[] rule) => Placeholders.EERegister.Contains(rule[1])
                 || Placeholders.COP0Register.Contains(rule[1])
@@ -4575,18 +4569,15 @@ namespace CodeDesigner
                 return operation;
             }
 
-            public string Assemble(string operation, int? targetAddress = null, int labelAddress = 0, string labelText = "")
+            public string Assemble(string operation)
             {
                 operation = operation.ToLower();
                 
-                var instruction = FindInstructionByName(ParseInstructionName(operation)).FirstOrDefault();
-                var operationArgs = ParseArgs(operation);
-                var syntaxArgs = ParseArgs(instruction.Syntax);
+                var instruction = FindInstructionByName(Helper.ParseInstructionName(operation)).FirstOrDefault();
+                var operationArgs = Helper.ParseArgs(operation);
+                var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
                 var binary = instruction.InstructionBin;
                 var rules = Helper.SplitRules(instruction);
-
-                operation = PatchTargetLabels(operation, syntaxArgs, targetAddress, labelAddress, labelText);
-
                 var i = 0;
                 var syntax = instruction.Syntax.ToLower();
                 var ruleSize = 0;

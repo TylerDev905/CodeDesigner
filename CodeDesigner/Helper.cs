@@ -16,6 +16,10 @@ namespace CodeDesigner
 
         public static string ZeroPad(string paddingString, int size) => paddingString.PadLeft(size, '0');
 
+        public static string ParseInstructionName(string line) => line.Replace(",", "").Split(new string[] { " " }, StringSplitOptions.None)[0];
+
+        public static List<string> ParseArgs(string line) => line.Replace(",", "").Replace(")", "").Split(new string[] { " ", "(" }, StringSplitOptions.None).Skip(1).Take(4).ToList();
+
         public static List<string[]> SplitRules(Instruction instruction)
         {
             List<string[]> results = new List<string[]>();

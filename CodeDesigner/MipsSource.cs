@@ -9,54 +9,59 @@ namespace CodeDesigner
 {
     public class MipsSource
     {
-        public int AddressCounter { get; set; }
-        public int SyntaxItemIndex { get; set; }
-        public List<ISyntax> SyntaxItems { get; set; } = new List<ISyntax>();
-        public List<Label> Labels { get; set; } = new List<Label>();
         public string Source { get; set; } = string.Empty;
+        public List<ILine> ILineCollection { get; set; } = new List<ILine>();
+        public int LineNumber { get; set; }
+        public int LineCount { get; set; }
+        public List<Label> Labels { get; set; } = new List<Label>();
+
         public string AssembledCode { get; set; }
-        public Mips32 Mips { get; set; } = new Mips32();
+        public int Address { get; set; }
+
         public List<string> Logs { get; set; } = new List<string>();
         public bool Exit { get; set; }
-        public List<string> Commands = new List<string> { "hexcode", "setreg", "call", "print" };
-        public string LabelPattern = @"([_.a-z0-9]{3,15}):";
-        public string TargetPattern = @":([_.a-z0-9]{3,15})";
+
+        public Mips32 Mips { get; set; } = new Mips32();
+        public static List<string> MipsArgTypes = new List<string> { "Branch", "Code", "Register", "Integer", "Immediate", "Call" };
+        public static List<string> Commands = new List<string> { "hexcode", "setreg", "call", "print"};
+
+        public static string LabelPattern = @"([_.a-z0-9]{3,15}):";
+        public static string TargetPattern = @":([_.a-z0-9]{3,15})";
+        public static string WordPattern = "([a-f0-9]{8})";
+
+        public static string MultiLineStart = "/*";
+        public static string MultiLineEnd = "*/";
+        public static string SingleLine = "//";
 
         public MipsSource(string source)
         {
-            AddressCounter = 0;
-            SyntaxItemIndex = 0;
+            Address = 0;
+            LineNumber = 0;
             Source = source;
         }
 
-        public MipsSource(int addressCounter, int syntaxitemIndex, string source)
-        {
-            AddressCounter = addressCounter;
-            SyntaxItemIndex = syntaxitemIndex;
-            Source = source;
-        }
-        
         public void Parse()
         {
-            Logs.Add("Analyzing begin...");
+            Exit = false;
             var source = Source
                 .Replace("\t", "")
                 .Replace("\r", "")
                 .Replace("\n", "  ");
 
-            var syntaxItems = source.Split(new string[] { "  " }, StringSplitOptions.None).ToList();
-            Exit = false;
-            for (SyntaxItemIndex = 0; SyntaxItemIndex < syntaxItems.Count();)
+            var lines = source.Split(new string[] { "  " }, StringSplitOptions.None).ToList();
+            LineCount = lines.Count();
+
+            for (LineNumber = 0; LineNumber < lines.Count();)
             {
-                if (!IsComment(syntaxItems))
+                if (!IsComment(lines))
                     if (!Exit)
                     {
-                        if (!IsBlankLine(syntaxItems[SyntaxItemIndex]))
-                            if (!IsLabel(syntaxItems[SyntaxItemIndex]))
-                                if (!IsAddressUpdate(syntaxItems[SyntaxItemIndex]))
-                                    if (!IsTargetLabel(syntaxItems[SyntaxItemIndex]))
-                                        if (!IsCommand(syntaxItems[SyntaxItemIndex]))
-                                            IsOperation(syntaxItems[SyntaxItemIndex]);                    
+                        if (!IsBlankLine(lines[LineNumber]))
+                            if (!IsLabel(lines[LineNumber]))
+                                if (!IsAddressUpdate(lines[LineNumber]))
+                                    if (!IsTargetLabel(lines[LineNumber]))
+                                        if (!IsCommand(lines[LineNumber]))
+                                            IsOperation(lines[LineNumber]);
                     }
                     else
                         break;
@@ -66,85 +71,100 @@ namespace CodeDesigner
         public string ToCode()
         {
             var result = string.Empty;
-            Console.WriteLine("\nAssembling...");
-            
-            for (var i = 0; i < SyntaxItems.Count(); i++)
+            for (var i = 0; i < ILineCollection.Count(); i++)
             {
                 var address = string.Empty;
-                var data = string.Empty;
-                var type = SyntaxItems[i].GetType();
+                var addressData = string.Empty;
 
-                if (type != typeof(Label) && SyntaxItems[i].AddressCounter != null)
-                    address = Helper.ZeroPad(Convert.ToString((int)SyntaxItems[i].AddressCounter, 16), 8);
+                var iLine = ILineCollection[i];
+                var iLineType = iLine.GetType();
 
-                if (type == typeof(Operation))
-                    data = ((Operation)SyntaxItems[i]).Data;
+                if (iLineType != typeof(AddressUpdate))
+                    address = Helper.ZeroPad(Convert.ToString(iLine.Address, 16), 8);
 
-                if (type == typeof(TargetLabel))
-                {
-                    var target = ((TargetLabel)SyntaxItems[i]);
-                    try {
-                        if (target.IsOperation) {
-                            var label = Labels.Single(x => x.Text == target.Text);
-                            data = Mips.Assemble(target.Line, (int)target.AddressCounter, (int)label.AddressCounter, target.Text);
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        Logs.Add($"Line {target.LineNumber + 1}: Exception thrown - The target label was incorrectly formatted");
-                    }
-                }
-                if (type == typeof(Hexcode))
-                    data = ((Hexcode)SyntaxItems[i]).Data;
+                if (iLineType == typeof(Operation))
+                    addressData = ((Operation)iLine).AddressData;
+
+                if (iLineType == typeof(TargetLabel))
+                    addressData = TargetLabelAssemble(iLine);
                 
-                    if (address != string.Empty && data != string.Empty)
-                    result += $"{address} {data}\r\n";
+                if (iLineType == typeof(Hexcode))
+                    addressData = ((Hexcode)iLine).AddressData;
+
+                if (address != string.Empty && addressData != string.Empty)
+                    result += $"{address} {addressData}\r\n";
             }
             return result;
         }
 
-        public interface ISyntax
+        public string TargetLabelAssemble(ILine iLine)
         {
-            int LineNumber { get; set; }
-            int ByteLength { get; set; }
-            int? AddressCounter { get; set; }
+            var result = string.Empty;
+            var target = ((TargetLabel)iLine);
+            var label = Labels.Single(x => x.Text == target.Text);
+            if (target.IsOperation)
+            {
+                result = target.Line;
+                var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(result.ToUpper())));
+                var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
+
+                if (syntaxArgs.Contains(Placeholders.Call))
+                {
+                    result = result.Replace($":{label.Text}", $"${Helper.ZeroPad(Convert.ToString(label.Address, 16), 8)}");
+                    return Mips.Assemble(result);
+                }
+                else
+                {
+                    var value = 0;
+                    if (label.Address > target.Address)
+                        value = (label.Address - target.Address);
+                    else
+                        value = ((target.Address - label.Address) * -1) - 4;
+
+                    var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
+                    result = result.Replace($":{label.Text}", $"${offset.Substring(offset.Count() - 4, 4)}");
+                    return Mips.Assemble(result);
+                }
+            }
+            return result;
         }
 
-        public class BlankLine : ISyntax
+        public interface ILine
+        {
+            int LineNumber { get; set; }
+            int AddressIncrement { get; set; }
+            int Address { get; set; }
+        }
+
+        public class BlankLine : ILine
         {
             public int LineNumber { get; set; }
-            public int ByteLength { get; set; } = 0;
-            public int? AddressCounter { get; set; }
+            public int AddressIncrement { get; set; } = 0;
+            public int Address { get; set; }
         }
 
         public bool IsBlankLine(string line)
         {
-            if(line == string.Empty)
+            if (line == string.Empty)
             {
-                SyntaxItems.Add(new BlankLine() {
-                    LineNumber = SyntaxItemIndex
+                ILineCollection.Add(new BlankLine()
+                {
+                    LineNumber = LineNumber
                 });
-                SyntaxItemIndex++;
+                LineNumber++;
                 return true;
             }
             return false;
         }
 
-        public static class CommentIndicators
-        {
-            public static string MultiLineStart = "/*";
-            public static string MultiLineEnd = "*/";
-            public static string SingleLine = "//";
-        }
-
-        public class Comment : ISyntax
+        public class Comment : ILine
         {
             public int LineNumber { get; set; }
             public int LinePosition { get; set; }
             public int LineSpan { get; set; }
             public string Text { get; set; }
-            public int ByteLength { get; set; } = 0;
-            public int? AddressCounter { get; set; }
+            public int AddressIncrement { get; set; } = 0;
+            public int Address { get; set; }
         }
 
         public bool IsComment(List<string> lines)
@@ -153,186 +173,190 @@ namespace CodeDesigner
             var commentBuffer = string.Empty;
             var lineSpan = 0;
 
-            if (lines[SyntaxItemIndex].Contains(CommentIndicators.MultiLineStart))
+            if (lines[LineNumber].Contains(MultiLineStart))
             {
-                if (lines[SyntaxItemIndex].Contains(CommentIndicators.MultiLineEnd))
+                if (lines[LineNumber].Contains(MultiLineEnd))
                 {
-                    var startIndex = lines[SyntaxItemIndex].IndexOf(CommentIndicators.MultiLineStart);
-                    var endIndex = lines[SyntaxItemIndex].IndexOf(CommentIndicators.MultiLineEnd);
-                    commentBuffer += lines[SyntaxItemIndex].Substring(startIndex, (endIndex - startIndex + 2));
-                    lines[SyntaxItemIndex] = lines[SyntaxItemIndex].Replace(commentBuffer, "").Trim(' ');
+                    var startIndex = lines[LineNumber].IndexOf(MultiLineStart);
+                    var endIndex = lines[LineNumber].IndexOf(MultiLineEnd);
+                    commentBuffer += lines[LineNumber].Substring(startIndex, (endIndex - startIndex + 2));
+                    lines[LineNumber] = lines[LineNumber].Replace(commentBuffer, "").Trim(' ');
                     commentFound = true;
                 }
 
-                var itemCount = lines.Count();
-                var itemIndex = SyntaxItemIndex;
+                var tempLineNumber = LineNumber;
 
-                try {
-                    while (commentFound == false || itemIndex < itemCount - 1)
+                try
+                {
+                    while (commentFound == false || tempLineNumber < LineCount - 1)
                     {
-                        if (lines[itemIndex].Contains(CommentIndicators.MultiLineEnd)) {
+                        if (lines[tempLineNumber].Contains(MultiLineEnd))
+                        {
                             commentFound = true;
-                            commentBuffer += lines[itemIndex];
+                            commentBuffer += lines[tempLineNumber];
                             break;
                         }
                         else
-                            commentBuffer += lines[itemIndex];
+                            commentBuffer += lines[tempLineNumber];
 
-                        itemIndex++;
+                        tempLineNumber++;
                         lineSpan++;
                     }
                     lineSpan++;
 
                 }
-                catch (ArgumentException e)
+                catch
                 {
-                    Logs.Add($"Line {SyntaxItemIndex + 1}: Exception thrown - The multi line comment is missing its closing indicator");
+                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The multi line comment is missing its closing indicator");
                     Exit = true;
                 }
-
             }
 
-            if (lines[SyntaxItemIndex].Contains(CommentIndicators.SingleLine)) {
-                if (lines[SyntaxItemIndex].StartsWith(CommentIndicators.SingleLine))
+            if (lines[LineNumber].Contains(SingleLine))
+            {
+                if (lines[LineNumber].StartsWith(SingleLine))
                 {
-                    commentBuffer = lines[SyntaxItemIndex];
+                    commentBuffer = lines[LineNumber];
                     lineSpan = 1;
                 }
                 else
                 {
-                    var startIndex = lines[SyntaxItemIndex].IndexOf(CommentIndicators.SingleLine);
-                    commentBuffer += lines[SyntaxItemIndex].Substring(startIndex, lines[SyntaxItemIndex].Length - startIndex);
-                    lines[SyntaxItemIndex] = lines[SyntaxItemIndex].Replace(commentBuffer, "").Trim(' ');
+                    var startIndex = lines[LineNumber].IndexOf(SingleLine);
+                    commentBuffer += lines[LineNumber].Substring(startIndex, lines[LineNumber].Length - startIndex);
+                    lines[LineNumber] = lines[LineNumber].Replace(commentBuffer, "").Trim(' ');
                 }
                 commentFound = true;
             }
 
-            if (commentFound) {
-
-                SyntaxItems.Add(new Comment() {
+            if (commentFound)
+            {
+                ILineCollection.Add(new Comment()
+                {
                     Text = commentBuffer,
                     LineSpan = lineSpan,
-                    LineNumber = SyntaxItemIndex
+                    LineNumber = LineNumber
                 });
 
-                SyntaxItemIndex += lineSpan;
+                LineNumber += lineSpan;
                 return true;
             }
             return false;
         }
 
 
-        public class Operation : ISyntax
+        public class Operation : ILine
         {
             public int LineNumber { get; set; }
-            public string Data { get; set; }
-            public int ByteLength { get; set; } = 4;
-            public int? AddressCounter { get; set; }
+            public string AddressData { get; set; }
+            public int AddressIncrement { get; set; } = 4;
+            public int Address { get; set; }
         }
 
         public bool IsOperation(string item)
         {
-            try { 
+            try
+            {
                 var operation = new Operation()
                 {
-                    LineNumber = SyntaxItemIndex,
-                    AddressCounter = AddressCounter,
-                    Data = Mips.Assemble(item)
+                    LineNumber = LineNumber,
+                    Address = Address,
+                    AddressData = Mips.Assemble(item)
                 };
-                SyntaxItems.Add(operation);
-                AddressCounter += operation.ByteLength;
-                SyntaxItemIndex++;
+                ILineCollection.Add(operation);
+                Address += operation.AddressIncrement;
+                LineNumber++;
                 return true;
             }
             catch (ArgumentException e)
             {
-                var types = new string[] { "Branch", "Code", "Register", "Integer", "Immediate", "Call" };
                 var found = false;
-                foreach (var type in types)
+                foreach (var type in MipsArgTypes)
                     if (e.StackTrace.Contains($"Format{type}"))
                     {
-                        Logs.Add($"Line {SyntaxItemIndex + 1}: Exception thrown - Operation argument of type {type} is incorrectly typed");
+                        Logs.Add($"Line {LineNumber + 1}: Exception thrown - Operation argument of type {type} is incorrectly typed");
                         found = true;
                     }
-                if(!found)
-                    Logs.Add($"Line {SyntaxItemIndex + 1}: Exception thrown - The Operation cannot be parsed");
-                SyntaxItemIndex++;
+                if (!found)
+                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The Operation cannot be parsed");
+                LineNumber++;
                 return false;
             }
         }
 
-        public class AddressUpdate : ISyntax
+        public class AddressUpdate : ILine
         {
             public int LineNumber { get; set; }
             public int NewAddress { get; set; }
-            public int ByteLength { get; set; } = 0;
-            public int? AddressCounter { get; set; }
+            public int AddressIncrement { get; set; } = 0;
+            public int Address { get; set; }
         }
 
         public bool IsAddressUpdate(string item)
         {
             if (item.Contains("address"))
             {
-                try {
-                    var newAddress = Convert.ToInt32(CodeDesigner.Parse.WithRegex(item, "([a-f0-9]{8})"), 16);
-                    AddressCounter = newAddress;
-                    SyntaxItems.Add(new AddressUpdate()
+                try
+                {
+                    var newAddress = Convert.ToInt32(CodeDesigner.Parse.WithRegex(item, WordPattern), 16);
+                    Address = newAddress;
+                    ILineCollection.Add(new AddressUpdate()
                     {
-                        LineNumber = SyntaxItemIndex,
+                        LineNumber = LineNumber,
                         NewAddress = newAddress
                     });
-                    AddressCounter = newAddress;
+                    Address = newAddress;
                 }
-                catch(Exception e)
+                catch
                 {
-                    Logs.Add($"Line {SyntaxItemIndex + 1}: Exception thrown - The address update cannot be parsed");
+                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The address update cannot be parsed");
                 }
-                SyntaxItemIndex++;
+                LineNumber++;
                 return true;
             }
             return false;
         }
 
-        public class Command : ISyntax
+        public class Command : ILine
         {
             public int LineNumber { get; set; }
-            public int ByteLength { get; set; }
-            public List<string> Data { get; set; }
-            public int? AddressCounter { get; set; }
+            public int AddressIncrement { get; set; }
+            public List<string> AddressData { get; set; }
+            public int Address { get; set; }
         }
 
 
-        public class Hexcode : ISyntax
+        public class Hexcode : ILine
         {
             public int LineNumber { get; set; }
-            public int ByteLength { get; set; } = 4;
-            public string Data { get; set; }
-            public int? AddressCounter { get; set; }
+            public int AddressIncrement { get; set; } = 4;
+            public string AddressData { get; set; }
+            public int Address { get; set; }
         }
 
         public bool IsCommand(string item)
         {
-            var data = CodeDesigner.Parse.WithRegex(item, "([a-f0-9]{8})");
+            var AddressData = CodeDesigner.Parse.WithRegex(item, WordPattern);
             if (item.Contains("hexcode"))
             {
-                SyntaxItems.Add(new Hexcode() {
-                    LineNumber = SyntaxItemIndex,
-                    AddressCounter = AddressCounter,
-                    Data = data
+                ILineCollection.Add(new Hexcode()
+                {
+                    LineNumber = LineNumber,
+                    Address = Address,
+                    AddressData = AddressData
                 });
-                AddressCounter += 4;
-                SyntaxItemIndex++;
+                Address += 4;
+                LineNumber++;
                 return true;
             }
             return false;
         }
 
-        public class Label : ISyntax
+        public class Label : ILine
         {
             public int LineNumber { get; set; }
             public string Text { get; set; }
-            public int? AddressCounter { get; set; }
-            public int ByteLength { get; set; } = 0;
+            public int Address { get; set; }
+            public int AddressIncrement { get; set; } = 0;
         }
 
         public bool IsLabel(string item)
@@ -342,28 +366,28 @@ namespace CodeDesigner
                 var text = CodeDesigner.Parse.WithRegex(item, LabelPattern);
                 var label = new Label()
                 {
-                    LineNumber = SyntaxItemIndex,
-                    AddressCounter = AddressCounter,
+                    LineNumber = LineNumber,
+                    Address = Address,
                     Text = text
                 };
 
-                SyntaxItems.Add(label);
+                ILineCollection.Add(label);
                 Labels.Add(label);
-                Logs.Add(($"Line {SyntaxItemIndex + 1}: Found Label [ {text} ] - 0x{Helper.ZeroPad(Convert.ToString(AddressCounter, 16), 8)}"));
-                SyntaxItemIndex++;
+                Logs.Add(($"Line {LineNumber + 1}: Found Label [ {text} ] - 0x{Helper.ZeroPad(Convert.ToString(Address, 16), 8)}"));
+                LineNumber++;
                 return true;
             }
             return false;
         }
 
-        public class TargetLabel : ISyntax
+        public class TargetLabel : ILine
         {
             public int LineNumber { get; set; }
             public string Label { get; set; }
             public string Line { get; set; }
             public bool IsOperation { get; set; }
-            public int ByteLength { get; set; } = 0;
-            public int? AddressCounter { get; set; }
+            public int AddressIncrement { get; set; } = 0;
+            public int Address { get; set; }
             public string Text { get; set; }
         }
 
@@ -372,19 +396,19 @@ namespace CodeDesigner
             if (item.Contains(":") && Regex.IsMatch(item, TargetPattern, RegexOptions.IgnoreCase))
             {
                 var text = CodeDesigner.Parse.WithRegex(item, TargetPattern);
-                SyntaxItems.Add(new TargetLabel()
+                ILineCollection.Add(new TargetLabel()
                 {
-                    LineNumber = SyntaxItemIndex,
+                    LineNumber = LineNumber,
                     Label = CodeDesigner.Parse.WithRegex(item, TargetPattern),
                     Line = item,
                     IsOperation = Commands.Where(x => item.Contains(x)).Count() == 0 ? true : false,
                     Text = text,
-                    AddressCounter = AddressCounter
+                    Address = Address
                 });
-                Logs.Add(($"Line {SyntaxItemIndex + 1}: Found Target Label [ {text} ] - 0x{Helper.ZeroPad(Convert.ToString(AddressCounter, 16), 8)}"));
-                AddressCounter += 4; 
+                Logs.Add(($"Line {LineNumber + 1}: Found Target Label [ {text} ] - 0x{Helper.ZeroPad(Convert.ToString(Address, 16), 8)}"));
+                Address += 4;
 
-                SyntaxItemIndex++;
+                LineNumber++;
                 return true;
             }
             return false;
