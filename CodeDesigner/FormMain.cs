@@ -19,8 +19,7 @@ namespace CodeDesigner
             var source = System.IO.File.ReadAllText(@"C:\Users\Tyler\Desktop\test.txt");
 
             var mipsSource = new MipsSource(source);
-            mipsSource.Parse();
-            Console.Write(mipsSource.ToCode());
+            Console.WriteLine(mipsSource.Parse());
 
             foreach (var log in mipsSource.Logs.OrderBy(x => x))
                 Console.WriteLine(log);
