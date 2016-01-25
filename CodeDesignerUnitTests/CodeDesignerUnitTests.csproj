@@ -61,9 +61,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeDesigner\CodeDesigner.csproj">
+    <ProjectReference Include="..\CodeDesigner\CodeDesignerFormApplication.csproj">
       <Project>{2c8bbf5a-f22e-4abc-bd6c-c9de1a0a4851}</Project>
-      <Name>CodeDesigner</Name>
+      <Name>CodeDesignerFormApplication</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

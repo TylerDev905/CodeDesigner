@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeDesigner", "CodeDesigner\CodeDesigner.csproj", "{2C8BBF5A-F22E-4ABC-BD6C-C9DE1A0A4851}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeDesignerFormApplication", "CodeDesigner\CodeDesignerFormApplication.csproj", "{2C8BBF5A-F22E-4ABC-BD6C-C9DE1A0A4851}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeDesignerUnitTests", "CodeDesignerUnitTests\CodeDesignerUnitTests.csproj", "{241CDFB9-6CAA-430D-8A82-71709D6C045A}"
 EndProject

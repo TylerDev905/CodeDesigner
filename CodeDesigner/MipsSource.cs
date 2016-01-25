@@ -18,7 +18,7 @@ namespace CodeDesigner
         public string AssembledCode { get; set; }
         public int Address { get; set; }
 
-        public List<string> Logs { get; set; } = new List<string>();
+        public List<Error> Logs { get; set; } = new List<Error>();
         public bool Exit { get; set; }
 
         public Mips32 Mips { get; set; } = new Mips32();
@@ -36,15 +36,28 @@ namespace CodeDesigner
         public static string MultiLineEnd = "*/";
         public static string SingleLine = "//";
 
+        public class Error
+        {
+            public int LineNumber { get; set; }
+            public string Message { get; set; }
+            public string Address { get; set; }
+        }
+
         public MipsSource(string source)
         {
-            Address = 0;
-            LineNumber = 0;
             Source = source;
         }
 
         public string Parse()
         {
+            ILineCollection = new List<ILine>();
+            LineNumber = 0;
+            LineCount = 0;
+            Labels = new List<Label>();
+            AssembledCode = string.Empty;
+            Address = 0;
+            Logs = new List<Error>();
+
             Exit = false;
             var source = Source
                 .Replace("\t", "")
@@ -60,64 +73,82 @@ namespace CodeDesigner
                     if (!Exit)
                     {
                         if (!IsBlankLine(lines[LineNumber]))
-                            if (!IsAddress(lines[LineNumber]))
-                                if (!IsLabel(lines[LineNumber]))
-                                    if (!IsHexcode(lines[LineNumber]))
-                                        if (!IsSetreg(lines[LineNumber]))
-                                            if (!IsCall(lines[LineNumber]))
-                                                if (!IsPrint(lines[LineNumber]))
-                                                    IsOperation(lines[LineNumber]);
+                            if (!IsIncrement(lines[LineNumber]))
+                                if (!IsAddress(lines[LineNumber]))
+                                    if (!IsLabel(lines[LineNumber]))
+                                        if (!IsHexcode(lines[LineNumber]))
+                                            if (!IsSetreg(lines[LineNumber]))
+                                                if (!IsCall(lines[LineNumber]))
+                                                    if (!IsPrint(lines[LineNumber]))
+                                                        IsOperation(lines[LineNumber]);
+
                     }
                     else
                         return string.Empty;
             }
-
-
+            LineNumber = 0;
             return PatchLabels();
+        }
+
+        public void AddError(string message)
+        {
+            Logs.Add(new Error()
+            {
+                LineNumber = LineNumber + 1,
+                Message = message,
+                Address = Convert.ToString(Address, 16).PadLeft(8, '0')
+            });
         }
 
         public string PatchLabels()
         {
             var result = string.Empty;
-
             for (var i = 0; i < ILineCollection.Count(); i++)
             {
                 var iLine = ILineCollection[i];
                 var iLineType = iLine.GetType();
+                LineNumber = iLine.LineNumber;
 
-                if (iLineType == typeof(Setreg))
+                if (iLineType == typeof(Setreg) && iLine.HasLabel)
                 {
                     var setreg = (Setreg)iLine;
                     IsSetreg(setreg.Line, true, i);
-                    result += CodeFormatMulti(setreg.Address, ILineCollection[i].AddressData);
                 }
 
-                if (iLineType == typeof(Hexcode))
+                if (iLineType == typeof(Hexcode) && iLine.HasLabel)
                 {
                     var hexcode = (Hexcode)iLine;
                     IsHexcode(hexcode.Line, true, i);
-                    result += CodeFormatMulti(hexcode.Address, ILineCollection[i].AddressData);
                 }
 
-                if (iLineType == typeof(Call))
+                if (iLineType == typeof(Call) && iLine.HasLabel)
                 {
                     var call = (Call)iLine;
                     IsCall(call.Line, true, i);
-                    result += CodeFormatMulti(call.Address, ILineCollection[i].AddressData);
+                }
+
+                if (iLineType == typeof(Operation) && iLine.HasLabel)
+                {
+                    var operation = (Operation)iLine;
+                    IsOperation(operation.Line, true, i);
+                }
+
+                if (iLineType == typeof(Increment))
+                {
+                    var increment = (Increment)iLine;
                 }
 
                 if (iLineType == typeof(Print))
                 {
                     var print = (Print)iLine;
-                    result += CodeFormatMulti(print.Address, ILineCollection[i].AddressData);
                 }
 
-                if (iLineType == typeof(Operation))
+                if (ILineCollection[i].AddressData != null)
                 {
-                    var operation = (Operation)iLine;
-                    IsOperation(operation.Line, true, i);
-                    result += CodeFormatMulti(operation.Address, ILineCollection[i].AddressData);
+                    result += CodeFormatMulti(iLine.Address, ILineCollection[i].AddressData);
+                    Address += iLine.AddressIncrement;
                 }
+
             }
             return result;
         }
@@ -133,56 +164,6 @@ namespace CodeDesigner
                 address += 4;
             }
             return result;
-        }
-
-        public interface ILine
-        {
-            int LineNumber { get; set; }
-            int AddressIncrement { get; set; }
-            int Address { get; set; }
-            bool HasLabel { get; set; }
-            List<string> AddressData { get; set; }
-        }
-
-        public class BlankLine : ILine
-        {
-            public int LineNumber { get; set; }
-            public List<string> AddressData { get; set; }
-            public int AddressIncrement { get; set; } = 0;
-            public int Address { get; set; }
-            public bool HasLabel { get; set; } = false;
-        }
-
-        public class Comment : ILine
-        {
-            public int LineNumber { get; set; }
-            public int LinePosition { get; set; }
-            public List<string> AddressData { get; set; }
-            public int LineSpan { get; set; }
-            public string Text { get; set; }
-            public int AddressIncrement { get; set; } = 0;
-            public int Address { get; set; }
-            public bool HasLabel { get; set; } = false;
-        }
-
-        public class AddressUpdate : ILine
-        {
-            public int LineNumber { get; set; }
-            public int NewAddress { get; set; }
-            public List<string> AddressData { get; set; }
-            public int AddressIncrement { get; set; } = 0;
-            public int Address { get; set; }
-            public bool HasLabel { get; set; } = false;
-        }
-
-        public class Label : ILine
-        {
-            public int LineNumber { get; set; }
-            public string Text { get; set; }
-            public int Address { get; set; }
-            public List<string> AddressData { get; set; }
-            public int AddressIncrement { get; set; } = 0;
-            public bool HasLabel { get; set; } = false;
         }
 
         public bool IsBlankLine(string line)
@@ -257,7 +238,7 @@ namespace CodeDesigner
                 catch
                 {
                     Exit = true;
-                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The multi line comment is missing its closing indicator");
+                    AddError($"Line {LineNumber + 1}: Exception thrown - The multi line comment is missing its closing indicator");
                 }
             }
             // If a comment was found add it to the ILine collection
@@ -310,103 +291,83 @@ namespace CodeDesigner
                         NewAddress = newAddress
                     });
                     Address = newAddress;
+                    LineNumber++;
+                    return true;
                 }
                 else
-                    Logs.Add($"Line {LineNumber + 1}: Exception thrown - The address update cannot be parsed");
+                {
+                    AddError($"Line {LineNumber + 1}: Exception thrown - The address update cannot be parsed");
+                }
                 LineNumber++;
                 return true;
             }
             return false;
         }
 
-        public class Operation : ILine
-        {
-            public int LineNumber { get; set; }
-            public string Line { get; set; }
-            public List<string> AddressData { get; set; }
-            public int AddressIncrement { get; set; } = 4;
-            public int Address { get; set; }
-            public bool HasLabel { get; set; }
-        }
-
-        public class Setreg : ILine
-        {
-            public int LineNumber { get; set; }
-            public string Line { get; set; }
-            public int AddressIncrement { get; set; } = 8;
-            public List<string> AddressData { get; set; }
-            public int Address { get; set; }
-            public bool HasLabel { get; set; }
-        }
-
-        public class Call : ILine
-        {
-            public int LineNumber { get; set; }
-            public string Line { get; set; }
-            public int AddressIncrement { get; set; }
-            public List<string> AddressData { get; set; }
-            public int Address { get; set; }
-            public bool HasLabel { get; set; }
-        }
-
-        public class Hexcode : ILine
-        {
-            public int LineNumber { get; set; }
-            public string Line { get; set; }
-            public int AddressIncrement { get; set; } = 4;
-            public List<string> AddressData { get; set; }
-            public int Address { get; set; }
-            public bool HasLabel { get; set; }
-        }
-
-        public class Print : ILine
-        {
-            public int LineNumber { get; set; }
-            public int NewAddress { get; set; }
-            public List<string> AddressData { get; set; }
-            public int AddressIncrement { get; set; } = 0;
-            public int Address { get; set; }
-            public bool HasLabel { get; set; } = false;
-        }
-
         public bool IsOperation(string item, bool isLabelAssemble = false, int? iLineIndex = null)
         {
             var data = string.Empty;
             var hasLabel = false;
-
             if (item.Contains(":"))
             {
                 if (isLabelAssemble)
                 {
-                    var parsed = Regex.Match(item, TargetPattern);
-                    var label = Labels.Single(x => x.Text == parsed.Groups[1].Value);
-
-                    var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(item.ToUpper())));
-                    var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
-
-                    if (syntaxArgs.Contains(Placeholders.Call))
+                    try
                     {
-                        item = item.Replace($":{label.Text}", $"${Helper.ZeroPad(Convert.ToString(label.Address, 16), 8)}");
-                        data = Mips.Assemble(item);
-                    }
-                    else
-                    {
-                        var value = 0;
-                        if (label.Address > ILineCollection[(int)iLineIndex].Address)
-                            value = (label.Address - ILineCollection[(int)iLineIndex].Address);
+                        var parsed = Regex.Match(item, TargetPattern);
+                        var label = Labels.Single(x => x.Text == parsed.Groups[1].Value);
+                        var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(item.ToUpper())));
+                        var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
+
+                        if (syntaxArgs.Contains(Placeholders.Call))
+                        {
+                            item = item.Replace($":{label.Text}", $"${Helper.ZeroPad(Convert.ToString(label.Address, 16), 8)}");
+                            data = Mips.Assemble(item);
+                        }
                         else
-                            value = ((ILineCollection[(int)iLineIndex].Address - label.Address) * -1) - 4;
+                        {
+                            var value = 0;
+                            if (label.Address > ILineCollection[(int)iLineIndex].Address)
+                                value = (label.Address - ILineCollection[(int)iLineIndex].Address);
+                            else
+                                value = ((ILineCollection[(int)iLineIndex].Address - label.Address) * -1) - 4;
 
-                        var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
-                        item = item.Replace($":{label.Text}", $"${offset.Substring(offset.Count() - 4, 4)}");
-                        data = Mips.Assemble(item);
+                            var offset = Helper.ZeroPad(Convert.ToString(value, 16), 4);
+                            item = item.Replace($":{label.Text}", $"${offset.Substring(offset.Count() - 4, 4)}");
+                            data = Mips.Assemble(item);
+                        }
+                    }
+                    catch
+                    {
+                        AddError($"Line {LineNumber + 1}: Exception thrown - Operation argument of type label is not defined");
                     }
                 }
                 hasLabel = true;
             }
             else
-                data = Mips.Assemble(item);
+            {
+                try
+                {
+                    data = Mips.Assemble(item);
+                }
+                catch (Exception e)
+                {
+                    var found = false;
+                    var message = string.Empty;
+                    foreach (var type in MipsArgTypes)
+                    {
+                        if (e.StackTrace.Contains($"Format{type}"))
+                        {
+                            message = $"Line {LineNumber + 1}: Exception thrown - Operation argument of type {type} is incorrectly typed";
+                            found = true;
+                        }
+                    }
+                    if (!found)
+                        message = $"Line {LineNumber + 1}: Exception thrown - The Operation cannot be parsed";
 
+                    AddError(message);
+                }
+            }
             var operation = new Operation()
             {
                 LineNumber = LineNumber,
@@ -435,6 +396,10 @@ namespace CodeDesigner
                 if (item.Contains("$"))
                 {
                     var parsed = Regex.Match(item, WordPattern);
+                    if (parsed.Groups.Count == 1)
+                    {
+                        AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type hex cannot be parsed");
+                    }
                     hex = parsed.Groups[1].Value;
                 }
 
@@ -442,8 +407,15 @@ namespace CodeDesigner
                 {
                     if (isLabelAssemble)
                     {
-                        var parsed = Regex.Match(item, TargetPattern);
-                        hex = Convert.ToString(Labels.Single(x => x.Text == parsed.Groups[1].Value).Address, 16);
+                        try
+                        {
+                            var parsed = Regex.Match(item, TargetPattern);
+                            hex = Convert.ToString(Labels.Single(x => x.Text == parsed.Groups[1].Value).Address, 16);
+                        }
+                        catch
+                        {
+                            AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type label is not defined");
+                        }
                     }
                     hasLabel = true;
                 }
@@ -480,28 +452,43 @@ namespace CodeDesigner
 
                 if (item.Contains("$"))
                 {
-                    var parsed = Regex.Match(item, $"{RegisterPattern}\\, \\${WordPattern}");
-                    register = parsed.Groups[1].Value;
-                    hex = parsed.Groups[2].Value;
+                    register = CodeDesigner.Parse.WithRegex(item, $"setreg {RegisterPattern}");
+                    hex = CodeDesigner.Parse.WithRegex(item, WordPattern);
+                    if(register == string.Empty)
+                        AddError($"Line {LineNumber + 1}: Exception thrown - Setreg argument of type register cannot be parsed");
+                    if (hex ==  string.Empty)
+                        AddError($"Line {LineNumber + 1}: Exception thrown - Setreg argument of type hex cannot be parsed");
                 }
 
                 if (item.Contains(":"))
                 {
                     if (isLabelAssemble)
                     {
-                        var parsed = Regex.Match(item, $"{RegisterPattern}, {TargetPattern}");
-                        register = parsed.Groups[1].Value;
-                        hex = Convert.ToString(Labels.Single(x => x.Text == parsed.Groups[2].Value).Address, 16).PadLeft(8, '0');
+                        register = CodeDesigner.Parse.WithRegex(item, $"setreg {RegisterPattern}");
+                        hex = CodeDesigner.Parse.WithRegex(item, TargetPattern);
+                        try {
+                            hex = Convert.ToString(Labels.Single(x => x.Text == hex).Address, 16).PadLeft(8, '0');
+                        }
+                        catch
+                        {
+                            AddError($"Line {LineNumber + 1}: Exception thrown - Setreg argument of type label cannot be parsed or does not exist");
+                        }
+                        if (register == string.Empty)
+                            AddError($"Line {LineNumber + 1}: Exception thrown - Setreg argument of type register cannot be parsed");
                     }
                     hasLabel = true;
                 }
 
                 if (register != string.Empty)
                 {
-                    var hexUpper = hex.Substring(0, 4);
-                    var hexLower = hex.Substring(4, 4);
-                    data.Add(Mips.Assemble($"lui {register} ${hexUpper}"));
-                    data.Add(Mips.Assemble($"ori {register}, {register}, ${hexLower}"));
+                    try
+                    {
+                        var hexUpper = hex.Substring(0, 4);
+                        var hexLower = hex.Substring(4, 4);
+                        data.Add(Mips.Assemble($"lui {register} ${hexUpper}"));
+                        data.Add(Mips.Assemble($"ori {register}, {register}, ${hexLower}"));
+                    }
+                    catch { }
                 }
 
                 var setreg = new Setreg()
@@ -535,36 +522,45 @@ namespace CodeDesigner
 
                 if (item.Contains("$"))
                 {
-                    var parsed = Regex.Match(item, WordPattern + BetweenCurleyBraces);
-                    hex = parsed.Groups[1].Value;
-                    args = parsed.Groups[2].Value.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    hex = CodeDesigner.Parse.WithRegex(item, WordPattern);
+                    args = CodeDesigner.Parse.WithRegex(item, BetweenCurleyBraces).Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (hex == string.Empty)
+                        AddError($"Line {LineNumber + 1}: Exception thrown - Call argument of type hex cannot be parsed");
                 }
 
-                if (item.Contains(":") && isLabelAssemble)
+                if (item.Contains(":"))
                 {
                     if (isLabelAssemble)
                     {
-                        var parsed = Regex.Match(item, TargetPattern + BetweenCurleyBraces);
-                        hex = Convert.ToString(Labels.Single(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8, '0');
-                        args = parsed.Groups[2].Value.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        try
+                        {
+                            hex = CodeDesigner.Parse.WithRegex(item, TargetPattern);
+                            hex = Convert.ToString(Labels.Single(x => x.Text == hex).Address, 16).PadLeft(8, '0');
+                            args = CodeDesigner.Parse.WithRegex(item, BetweenCurleyBraces).Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        }
+                        catch
+                        {
+                            AddError($"Line {LineNumber + 1}: Exception thrown - Call argument of type label cannot be parsed");
+                        }
                     }
                     hasLabel = true;
                 }
 
                 var argCount = args.Count();
                 var data = new List<string>();
-
-                if (isLabelAssemble)
+                var paramReg = new List<string> { "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9" };
+                for (var i = 0; i < argCount; i++)
                 {
-                    var paramReg = new List<string> { "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9" };
-                    for (var i = 0; i < argCount; i++)
+                    if (i == (argCount - 1))
+                        data.Add(Mips.Assemble($"jal ${hex}"));
+                    try
                     {
-                        if (i == (argCount - 1))
-                            data.Add(Mips.Assemble($"jal ${hex}"));
-
                         var register = Mips.Registers.Single(x => x.Name == args[i]);
                         data.Add(Mips.Assemble($"daddu {paramReg[i]}, {register.Name}, zero"));
-
+                    }
+                    catch
+                    {
+                        AddError($"Line {LineNumber + 1}: Exception thrown - Call argument {i + 1} cannot be parsed");
                     }
                 }
 
@@ -596,6 +592,10 @@ namespace CodeDesigner
             if (item.Contains("print"))
             {
                 var parsed = Regex.Match(item, BetweenQuotes);
+                if (parsed.Groups.Count == 1)
+                {
+                    AddError($"Line {LineNumber + 1}: Exception thrown - Print is missing a quote or contains an empty string");
+                }
                 var bytes = Encoding.ASCII.GetBytes(parsed.Groups[1].Value);
                 var data = new List<string>();
 
@@ -631,6 +631,44 @@ namespace CodeDesigner
             return false;
         }
 
+        public bool IsIncrement(string item, bool isLabelAssemble = false, int? iLineIndex = null)
+        {
+            var data = string.Empty;
+            var register = string.Empty;
+
+            try
+            {
+                if (item.Contains("++"))
+                {
+
+                    register = CodeDesigner.Parse.WithRegex(item, "([a-z0-9]{2,})");
+                    data = Mips.Assemble($"addiu {register}, {register}, $0001");
+                }
+
+                if (item.Contains("--"))
+                {
+                    register = CodeDesigner.Parse.WithRegex(item, "([a-z0-9]{2,})");
+                    data = Mips.Assemble($"addiu {register}, {register}, $FFFF");
+                }
+            }
+            catch { }
+
+            if (data != string.Empty)
+            {
+                ILineCollection.Add(new Increment()
+                {
+                    LineNumber = LineNumber,
+                    Address = Address,
+                    AddressData = new List<string> { data },
+                    HasLabel = false,
+                    Line = item
+                });
+                LineNumber++;
+                Address += 4;
+                return true;
+            }
+            return false;
+        }
     }
 
 }
