@@ -99,6 +99,7 @@
     <Compile Include="TabControlEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Theme.cs" />
     <Compile Include="TreeNode.cs" />
     <EmbeddedResource Include="AssemblerControl.resx">
       <DependentUpon>AssemblerControl.cs</DependentUpon>

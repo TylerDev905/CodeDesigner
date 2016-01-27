@@ -31,6 +31,12 @@ namespace CodeDesigner
         private void assemblerControl1_Load(object sender, EventArgs e)
         {
             assemblerControl1.LoadSource();
+            disassemblerControl1.LoadMemoryDump();
+
+            var mipsSource = new MipsSource(assemblerControl1.Source);
+
+            assemblerControl1.SourceMips = mipsSource;
+            disassemblerControl1.mips = mipsSource.Mips;
             disassemblerControl1.Start();
         }
     }

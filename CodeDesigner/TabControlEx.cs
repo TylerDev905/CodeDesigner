@@ -31,7 +31,7 @@ namespace CodeDesigner
             if (e.Index == SelectedIndex)
             {
                 Brush textBrush = new SolidBrush(Color.White);
-                Brush fillBrush = new SolidBrush(Color.DimGray);
+                Brush fillBrush = new SolidBrush(Color.FromArgb(255, 64, 64, 64));
                 e.Graphics.FillRectangle(fillBrush, tabFill);
                 e.Graphics.DrawString(TabPages[e.Index].Text, Font, textBrush, new Point(e.Bounds.X + 5, e.Bounds.Y + 5));
                 int offset = (e.Bounds.Height - 16) / 2;
