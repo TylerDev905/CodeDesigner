@@ -18,10 +18,9 @@ namespace CodeDesigner
         public byte[] MemoryDump { get; set; }
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
-        public int PageEnd{ get; set; } = 2000;
+        public int PageEnd{ get; set; } = 100;
         public int PageIndex { get; set; } = 0;
         public bool IsInsert { get; set; } = false;
-        
         public Mips32 mips { get; set; }
 
         public DisassemblerControl()
@@ -29,6 +28,7 @@ namespace CodeDesigner
             InitializeComponent();
             dataGridViewDisassembler.KeyDown += new KeyEventHandler(OnKeyPressedDown);
             dataGridViewDisassembler.CellPainting += new DataGridViewCellPaintingEventHandler(OnCellPainting);
+            dataGridViewDisassembler.SelectionChanged += new EventHandler(OnSelected);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         }
         
@@ -46,11 +46,16 @@ namespace CodeDesigner
         public void Start()
         {
             var memoryIndex = PageStart;
-            while(memoryIndex < PageEnd)
+            while(memoryIndex < PageStart + PageEnd)
             {
                 AddDisassembledRow(AddressType.Operation, memoryIndex);
                 memoryIndex += 4;
             }
+        }
+
+        public void OnSelected(object sender, EventArgs e)
+        {
+            UpdateStringView();
         }
 
         public void OnKeyPressedDown(object sender, KeyEventArgs e)
@@ -160,18 +165,20 @@ namespace CodeDesigner
         
         public void UpdateStringView()
         {
-            List<byte> bytes = new List<byte>();
-
-            for (int i = dataGridViewDisassembler.SelectedRows[0].Index; i < PageEnd; i++)
+            if (dataGridViewDisassembler.SelectedRows.Count > 0)
             {
-                bytes.Add(MemoryDump[i] > 31 && MemoryDump[i] < 177 ? MemoryDump[i] : Convert.ToByte(46));
+                var bytes = new List<byte>();
+                var address = Convert.ToInt32(dataGridViewDisassembler.SelectedRows[0].Cells[0].Value.ToString(), 16);
+                for (int i = address; i < address + 500; i++)
+                    bytes.Add(MemoryDump[i] > 32 && MemoryDump[i] < 177 ? MemoryDump[i] : Convert.ToByte(46));
+
+                labelStringView.Text = Encoding.ASCII.GetString(bytes.ToArray());
             }
-            labelStringView.Text = System.Text.Encoding.ASCII.GetString(bytes.ToArray());
         }
 
         public void CursorUp()
         {
-            if (PageIndex > PageStart)
+            if (PageIndex > 0)
             {
                 PageStart -= 4;
                 AddDisassembledRow(AddressType.Operation, PageStart);
@@ -180,7 +187,7 @@ namespace CodeDesigner
 
         public void CursorDown()
         {
-            if(PageIndex < PageEnd)
+            if(PageIndex < PageStart + PageEnd)
             {
                 PageEnd += 4;
                 AddDisassembledRow(AddressType.Operation, PageEnd);
@@ -237,7 +244,6 @@ namespace CodeDesigner
             row.Cells[2].Value = disassembled;
             row.Cells[3].Value = "";
             row.Cells[4].Value = "";
-
             var cursor = dataGridViewDisassembler.SelectedRows.Count == 0 ? MemoryDumpSize : dataGridViewDisassembler.SelectedRows[0].Index;
 
             if (IsInsert)
@@ -246,20 +252,23 @@ namespace CodeDesigner
                 this.dataGridViewDisassembler.Rows.Add(row);
         }
 
-        private string ByteToText(byte byteData)
-        {
-            return Convert.ToString(Convert.ToInt32(byteData), 16).PadLeft(2, '0');
-        }
+        private string ByteToText(byte byteData) => Convert.ToString(Convert.ToInt32(byteData), 16).PadLeft(2, '0');
 
-        private string ByteToAscci(byte byteData)
-        {
-            return Encoding.ASCII.GetString(new byte[] { byteData > 31 && byteData < 177 ? byteData : Convert.ToByte(46) });
-        }
+        private string ByteToAscci(byte byteData) => Encoding.ASCII.GetString(new byte[] { byteData > 31 && byteData < 177 ? byteData : Convert.ToByte(46) });
 
-        private string ToAddress(int i)
-        {
-            return Convert.ToString(i, 16).PadLeft(8, '0');
-        }
+        private string ToAddress(int i) => Convert.ToString(i, 16).PadLeft(8, '0');
 
+        private void tsBtnAddress_Click(object sender, EventArgs e)
+        {
+            if(Regex.IsMatch(tsTbAddress.Text, Theme.WordPattern))
+            {
+                dataGridViewDisassembler.Rows.Clear();
+                var address = Convert.ToInt32(tsTbAddress.Text, 16);
+                PageIndex = address;
+                PageStart = address;
+                Start();
+                dataGridViewDisassembler.Rows[0].Selected = true;
+            }
+        }
     }
 }

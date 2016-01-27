@@ -124,10 +124,10 @@
   <data name="runToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAACnSURBVDhPYxhcwNDQ8D0QzzcwMJCHCpEGdHV1/8Owjo5Ovba2Nj9UijigoaHxHw2/V1dXj4dK
-        EwbKysr/ceDzSkpK9lBluIGcnNx/Ani/rKws7vCRkpL6TwTeD1WOCURFRf8TwPvFxcVxu0BAQOA/Dnxe
-        UFCQcBhwc3P/R8PveXl5iY8Fdnb2/zDMwcFRz8nJSVo6YGJies/MzDyfhYWFvJQ4FAEDAwBbI1S+Yh3L
-        gwAAAABJRU5ErkJggg==
+        YQUAAAAJcEhZcwAACxMAAAsTAQCanBgAAACGSURBVDhP1dExCoNAEEbhVS9giDcRD2QR0uQ0AcHCywiC
+        4D0Eg5gbJPEpTrPMRk0VH3zFFv80a/6uDhlO8+uHPoseF/jYlRwQDRJszj4weaNAhNW0A+KJGwI404a2
+        Cs60ga2EM20gBlzx9We04Qs5zljNHteIsTkZPpDCw65a3BHOrwNkzAhvF0UEZrAWRgAAAABJRU5ErkJg
+        gg==
 </value>
   </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

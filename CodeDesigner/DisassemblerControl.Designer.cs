@@ -28,19 +28,94 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DisassemblerControl));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.tsTbAddress = new System.Windows.Forms.ToolStripTextBox();
+            this.tsBtnAddress = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnSearch = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnStrings = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnLabels = new System.Windows.Forms.ToolStripButton();
             this.dataGridViewDisassembler = new CodeDesigner.DisassemblerGrid();
-            this.labelStringView = new CodeDesigner.LabelStringView();
             this.ColumnAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnOperation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnLabel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.labelStringView = new CodeDesigner.LabelStringView();
+            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDisassembler)).BeginInit();
             this.SuspendLayout();
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsTbAddress,
+            this.tsBtnAddress,
+            this.tsBtnSearch,
+            this.tsBtnStrings,
+            this.tsBtnLabels});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 25);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
+            this.toolStrip1.Size = new System.Drawing.Size(966, 36);
+            this.toolStrip1.TabIndex = 8;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // tsTbAddress
+            // 
+            this.tsTbAddress.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsTbAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsTbAddress.MaxLength = 8;
+            this.tsTbAddress.Name = "tsTbAddress";
+            this.tsTbAddress.Size = new System.Drawing.Size(100, 36);
+            this.tsTbAddress.Text = "00000000";
+            this.tsTbAddress.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // tsBtnAddress
+            // 
+            this.tsBtnAddress.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsBtnAddress.BackColor = System.Drawing.SystemColors.Control;
+            this.tsBtnAddress.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsBtnAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnAddress.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tsBtnAddress.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnAddress.Image")));
+            this.tsBtnAddress.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnAddress.Name = "tsBtnAddress";
+            this.tsBtnAddress.Size = new System.Drawing.Size(76, 33);
+            this.tsBtnAddress.Text = "Address";
+            this.tsBtnAddress.Click += new System.EventHandler(this.tsBtnAddress_Click);
+            // 
+            // tsBtnSearch
+            // 
+            this.tsBtnSearch.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnSearch.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnSearch.Image")));
+            this.tsBtnSearch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnSearch.Name = "tsBtnSearch";
+            this.tsBtnSearch.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.tsBtnSearch.Size = new System.Drawing.Size(83, 33);
+            this.tsBtnSearch.Text = "Search";
+            // 
+            // tsBtnStrings
+            // 
+            this.tsBtnStrings.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnStrings.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnStrings.Image")));
+            this.tsBtnStrings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnStrings.Name = "tsBtnStrings";
+            this.tsBtnStrings.Size = new System.Drawing.Size(92, 33);
+            this.tsBtnStrings.Text = "Strings";
+            // 
+            // tsBtnLabels
+            // 
+            this.tsBtnLabels.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnLabels.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnLabels.Image")));
+            this.tsBtnLabels.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnLabels.Name = "tsBtnLabels";
+            this.tsBtnLabels.Size = new System.Drawing.Size(83, 33);
+            this.tsBtnLabels.Text = "Labels";
             // 
             // dataGridViewDisassembler
             // 
@@ -77,7 +152,7 @@
             this.dataGridViewDisassembler.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridViewDisassembler.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewDisassembler.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.dataGridViewDisassembler.Location = new System.Drawing.Point(0, 18);
+            this.dataGridViewDisassembler.Location = new System.Drawing.Point(0, 61);
             this.dataGridViewDisassembler.Name = "dataGridViewDisassembler";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
@@ -92,23 +167,10 @@
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.Control;
             this.dataGridViewDisassembler.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.dataGridViewDisassembler.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dataGridViewDisassembler.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewDisassembler.Size = new System.Drawing.Size(966, 349);
+            this.dataGridViewDisassembler.Size = new System.Drawing.Size(966, 306);
             this.dataGridViewDisassembler.TabIndex = 7;
-            // 
-            // labelStringView
-            // 
-            this.labelStringView.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.labelStringView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.labelStringView.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelStringView.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelStringView.ForeColor = System.Drawing.Color.Black;
-            this.labelStringView.Location = new System.Drawing.Point(0, 0);
-            this.labelStringView.Name = "labelStringView";
-            this.labelStringView.Size = new System.Drawing.Size(966, 18);
-            this.labelStringView.TabIndex = 6;
-            this.labelStringView.Text = "623546563425436252436534";
-            this.labelStringView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ColumnAddress
             // 
@@ -150,16 +212,36 @@
             this.ColumnComment.Name = "ColumnComment";
             this.ColumnComment.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
+            // labelStringView
+            // 
+            this.labelStringView.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.labelStringView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.labelStringView.Dock = System.Windows.Forms.DockStyle.Top;
+            this.labelStringView.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelStringView.ForeColor = System.Drawing.Color.Black;
+            this.labelStringView.Location = new System.Drawing.Point(0, 0);
+            this.labelStringView.MinimumSize = new System.Drawing.Size(0, 25);
+            this.labelStringView.Name = "labelStringView";
+            this.labelStringView.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.labelStringView.Size = new System.Drawing.Size(966, 25);
+            this.labelStringView.TabIndex = 6;
+            this.labelStringView.Text = "HELLO WOLRD";
+            this.labelStringView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // DisassemblerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dataGridViewDisassembler);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.labelStringView);
             this.Name = "DisassemblerControl";
             this.Size = new System.Drawing.Size(966, 367);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDisassembler)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -171,5 +253,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnOperation;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnLabel;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnComment;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripTextBox tsTbAddress;
+        private System.Windows.Forms.ToolStripButton tsBtnAddress;
+        private System.Windows.Forms.ToolStripButton tsBtnSearch;
+        private System.Windows.Forms.ToolStripButton tsBtnStrings;
+        private System.Windows.Forms.ToolStripButton tsBtnLabels;
     }
 }
