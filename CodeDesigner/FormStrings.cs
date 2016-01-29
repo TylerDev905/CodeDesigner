@@ -15,8 +15,7 @@ namespace CodeDesigner
     {
         private BackgroundWorker worker { get; set; } = new BackgroundWorker();
         public byte[] MemoryDump { get; set; }
-        public List<ListViewItem> itemQ { get; set; } = new List<ListViewItem>();
-        public List<ListViewItem> Items { get; set; }  = new List<ListViewItem>();
+        public List<string> Items { get; set; }  = new List<string>();
 
         public FormStrings()
         {
@@ -24,6 +23,18 @@ namespace CodeDesigner
             worker.DoWork += new DoWorkEventHandler(worker_DoWork);
             worker.ProgressChanged += new ProgressChangedEventHandler(worker_progressChanged);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_CompletedWork);
+            tbSearch.TextChanged += new EventHandler(tbSearch_Changed);
+        }
+
+        private void tbSearch_Changed(object sender, EventArgs e)
+        {
+            if (tbSearch.Text != string.Empty)
+            {
+                lbStringDumper.Items.Clear();
+                lbStringDumper.Items.AddRange(Items.Where(x => x.Contains(tbSearch.Text)).ToArray());
+            }
+            else
+                lbStringDumper.Items.AddRange(Items.ToArray());
         }
 
         private void FormStrings_Load(object sender, EventArgs e)
@@ -38,42 +49,71 @@ namespace CodeDesigner
             int nopCount = 0;
             int matchCount = 0;
             int addressInt = 0;
+            int numberCount = 0;
+            int letterCount = 0;
             List<byte> buffer = new List<byte>();
             
             var FileData = (byte[])e.Argument;
             for (int i = 0; i < FileData.Length; i = i + 4)
             {
+                var reset = false;
+
                 for (int x = 0; x < 4; x++)
                 {
                     if (x == 0 && matchCount == 0)
+                    {
                         addressInt = i;
+                    }
                     if (FileData[i + x] == 0 && matchCount == 0)
+                    {
                         nopCount = 1;
+                    }
                     else if (FileData[i + x] != 0 && FileData[i + x] > 31 && FileData[i + x] < 127)
                     {
                         matchCount++;
+                        var character = FileData[i + x];
+                        if (character > 47 && character < 58)
+                        {
+                            numberCount++;
+                        }
+                        if (character > 64 && character < 91)
+                        {
+                            letterCount++;
+                        }
+                        if (character > 96 && character < 123)
+                        {
+                            letterCount++;
+                        }
                         buffer.Add(FileData[i + x]);
                     }
                     else if (FileData[i + x] == 0 && matchCount > successCount && nopCount.Equals(1))
                     {
-                        Items.Add(new ListViewItem() { Text = Encoding.ASCII.GetString(buffer.ToArray()) });
-                        matchCount = 0;
-                        nopCount = 0;
-                        addressInt = 0;
-                        worker.ReportProgress((int)(((float)i / (float)33554432) * 100)); 
+                        reset = true;
+                        var item = Encoding.ASCII.GetString(buffer.ToArray());
+                        if(letterCount > 2)
+                            Items.Add(item);
+                        
+                        worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
                         buffer.Clear();
                     }
                     else
                     {
+                        reset = true;
+                    }
+
+                    if (reset)
+                    {
                         matchCount = 0;
                         nopCount = 0;
                         addressInt = 0;
+                        numberCount = 0;
+                        letterCount = 0;
                         buffer.Clear();
                     }
+
                 }
             }
-            Items = Items.OrderBy(x => x.Text).ToList();
-
+            Items = Items.OrderBy(x => x).ToList();
         }
 
         private void worker_progressChanged(object sender, ProgressChangedEventArgs e)
@@ -81,15 +121,16 @@ namespace CodeDesigner
             toolStripProgressBar1.ProgressBar.Value = e.ProgressPercentage;
             toolStripProgressBar1.ProgressBar.Maximum = 100;
             toolStripProgressBar1.ProgressBar.Minimum = 0;
-            tssLProgress.Text = string.Format("%{0}", e.ProgressPercentage);
-           
+            tssLProgress.Text = string.Format("%{0}", e.ProgressPercentage);  
         }
 
         private void worker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)
         {
-            listViewStringDump.Items.AddRange(Items.ToArray());
+            lbStringDumper.Items.AddRange(Items.ToArray());
             toolStripProgressBar1.ProgressBar.Value = 100;
             tssLProgress.Text = "Completed";
+            toolStripProgressBar1.Visible = false;
+            tssLProgress.Visible = false;
         }
 
     }
