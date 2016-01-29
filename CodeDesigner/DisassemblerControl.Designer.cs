@@ -107,6 +107,7 @@
             this.tsBtnStrings.Name = "tsBtnStrings";
             this.tsBtnStrings.Size = new System.Drawing.Size(92, 33);
             this.tsBtnStrings.Text = "Strings";
+            this.tsBtnStrings.Click += new System.EventHandler(this.tsBtnStrings_Click);
             // 
             // tsBtnLabels
             // 

@@ -270,5 +270,13 @@ namespace CodeDesigner
                 dataGridViewDisassembler.Rows[0].Selected = true;
             }
         }
+
+        private void tsBtnStrings_Click(object sender, EventArgs e)
+        {
+            var FormStringsDump = new FormStrings()
+            {
+                MemoryDump = MemoryDump
+            }.ShowDialog();
+        }
     }
 }
