@@ -19,7 +19,6 @@ namespace CodeDesigner
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
         public int PageEnd{ get; set; } = 100;
-        public int PageIndex { get; set; } = 0;
         public bool IsInsert { get; set; } = false;
         public Mips32 mips { get; set; }
 
@@ -178,7 +177,7 @@ namespace CodeDesigner
 
         public void CursorUp()
         {
-            if (PageIndex > 0)
+            if (PageStart >= 4)
             {
                 PageStart -= 4;
                 AddDisassembledRow(AddressType.Operation, PageStart);
@@ -187,7 +186,7 @@ namespace CodeDesigner
 
         public void CursorDown()
         {
-            if(PageIndex < PageStart + PageEnd)
+            if (PageEnd < MemoryDump.Length)
             {
                 PageEnd += 4;
                 AddDisassembledRow(AddressType.Operation, PageEnd);
@@ -262,9 +261,9 @@ namespace CodeDesigner
         {
             if(Regex.IsMatch(tsTbAddress.Text, Theme.WordPattern))
             {
+                IsInsert = false;
                 dataGridViewDisassembler.Rows.Clear();
                 var address = Convert.ToInt32(tsTbAddress.Text, 16);
-                PageIndex = address;
                 PageStart = address;
                 Start();
                 dataGridViewDisassembler.Rows[0].Selected = true;
@@ -280,8 +279,8 @@ namespace CodeDesigner
             formStringsDump.ShowDialog();
             if (formStringsDump.Address != 0)
             {
+                IsInsert = false;
                 dataGridViewDisassembler.Rows.Clear();
-                PageIndex = formStringsDump.Address; 
                 PageStart = formStringsDump.Address;
                 Start();
                 dataGridViewDisassembler.Rows[0].Selected = true;

@@ -166,7 +166,6 @@
             this.disassemblerControl1.mips = null;
             this.disassemblerControl1.Name = "disassemblerControl1";
             this.disassemblerControl1.PageEnd = 2000;
-            this.disassemblerControl1.PageIndex = 0;
             this.disassemblerControl1.PageStart = 0;
             this.disassemblerControl1.Size = new System.Drawing.Size(891, 489);
             this.disassemblerControl1.TabIndex = 0;
