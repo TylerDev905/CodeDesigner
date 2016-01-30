@@ -31,8 +31,6 @@ namespace CodeDesigner
         private void SelectedItem(object sender, EventArgs e)
         {
             Address = Convert.ToInt32(lbStringDumper.SelectedItem.ToString().Substring(0, 8), 16);
-            worker.Dispose();
-            Items.Clear();
             this.Close();
         }
 
