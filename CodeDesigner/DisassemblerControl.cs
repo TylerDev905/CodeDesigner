@@ -28,6 +28,7 @@ namespace CodeDesigner
             dataGridViewDisassembler.KeyDown += new KeyEventHandler(OnKeyPressedDown);
             dataGridViewDisassembler.CellPainting += new DataGridViewCellPaintingEventHandler(OnCellPainting);
             dataGridViewDisassembler.SelectionChanged += new EventHandler(OnSelected);
+            dataGridViewDisassembler.KeyUp += new KeyEventHandler(OnKeyPressed);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         }
         
@@ -55,6 +56,38 @@ namespace CodeDesigner
         public void OnSelected(object sender, EventArgs e)
         {
             UpdateStringView();
+        }
+
+        public void OnKeyPressed(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Right:
+                    JumpToAddres();
+                    break;
+            }
+        }
+
+        private void JumpToAddres()
+        {
+            if (Regex.IsMatch(dataGridViewDisassembler.SelectedRows[0].Cells[2].Value.ToString(), Theme.WordPattern))
+                GoToAddress(dataGridViewDisassembler.SelectedRows[0].Cells[2].Value.ToString());
+
+            if (Regex.IsMatch(dataGridViewDisassembler.SelectedRows[0].Cells[1].Value.ToString(), Theme.WordPattern))
+                GoToAddress(dataGridViewDisassembler.SelectedRows[0].Cells[1].Value.ToString());
+        }
+
+        private void GoToAddress(string address)
+        {
+            var addressInt = Convert.ToInt32(Parse.WithRegex(address, Theme.WordPattern), 16);
+            if (addressInt < MemoryDump.Length)
+            {
+                IsInsert = false;
+                dataGridViewDisassembler.Rows.Clear();
+                PageStart = addressInt;
+                Start();
+                dataGridViewDisassembler.Rows[0].Selected = true;
+            }
         }
 
         public void OnKeyPressedDown(object sender, KeyEventArgs e)
@@ -168,10 +201,11 @@ namespace CodeDesigner
             {
                 var bytes = new List<byte>();
                 var address = Convert.ToInt32(dataGridViewDisassembler.SelectedRows[0].Cells[0].Value.ToString(), 16);
-                for (int i = address; i < address + 500; i++)
+                for (int i = address; i < address + 250; i++)
                     bytes.Add(MemoryDump[i] > 32 && MemoryDump[i] < 177 ? MemoryDump[i] : Convert.ToByte(46));
 
                 labelStringView.Text = Encoding.ASCII.GetString(bytes.ToArray());
+                labelStringView.Update();
             }
         }
 
@@ -276,7 +310,9 @@ namespace CodeDesigner
             {
                 MemoryDump = MemoryDump
             };
+
             formStringsDump.ShowDialog();
+
             if (formStringsDump.Address != 0)
             {
                 IsInsert = false;
