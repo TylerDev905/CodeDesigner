@@ -16,6 +16,7 @@ namespace CodeDesigner
         private BackgroundWorker worker { get; set; } = new BackgroundWorker();
         public byte[] MemoryDump { get; set; }
         public List<string> Items { get; set; }  = new List<string>();
+        public int Address { get; set; } 
 
         public FormStrings()
         {
@@ -24,6 +25,15 @@ namespace CodeDesigner
             worker.ProgressChanged += new ProgressChangedEventHandler(worker_progressChanged);
             worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_CompletedWork);
             tbSearch.TextChanged += new EventHandler(tbSearch_Changed);
+            lbStringDumper.MouseDoubleClick += new MouseEventHandler(SelectedItem);
+        }
+
+        private void SelectedItem(object sender, EventArgs e)
+        {
+            Address = Convert.ToInt32(lbStringDumper.SelectedItem.ToString().Substring(0, 8), 16);
+            worker.Dispose();
+            Items.Clear();
+            this.Close();
         }
 
         private void tbSearch_Changed(object sender, EventArgs e)
@@ -90,8 +100,8 @@ namespace CodeDesigner
                     {
                         reset = true;
                         var item = Encoding.ASCII.GetString(buffer.ToArray());
-                        if(letterCount > 2)
-                            Items.Add(item);
+                        if (letterCount > 2)
+                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item);
                         
                         worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
                         buffer.Clear();

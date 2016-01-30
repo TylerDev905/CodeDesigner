@@ -273,10 +273,19 @@ namespace CodeDesigner
 
         private void tsBtnStrings_Click(object sender, EventArgs e)
         {
-            var FormStringsDump = new FormStrings()
+            var formStringsDump = new FormStrings()
             {
                 MemoryDump = MemoryDump
-            }.ShowDialog();
+            };
+            formStringsDump.ShowDialog();
+            if (formStringsDump.Address != 0)
+            {
+                dataGridViewDisassembler.Rows.Clear();
+                PageIndex = formStringsDump.Address; 
+                PageStart = formStringsDump.Address;
+                Start();
+                dataGridViewDisassembler.Rows[0].Selected = true;
+            }
         }
     }
 }
