@@ -39,6 +39,7 @@
             this.tsBtnSearch = new System.Windows.Forms.ToolStripButton();
             this.tsBtnStrings = new System.Windows.Forms.ToolStripButton();
             this.tsBtnLabels = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnHistory = new System.Windows.Forms.ToolStripButton();
             this.dataGridViewDisassembler = new CodeDesigner.DisassemblerGrid();
             this.ColumnAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnData = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,7 +47,6 @@
             this.ColumnLabel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelStringView = new CodeDesigner.LabelStringView();
-            this.tsBtnHistory = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDisassembler)).BeginInit();
             this.SuspendLayout();
@@ -121,6 +121,17 @@
             this.tsBtnLabels.Name = "tsBtnLabels";
             this.tsBtnLabels.Size = new System.Drawing.Size(83, 33);
             this.tsBtnLabels.Text = "Labels";
+            this.tsBtnLabels.Click += new System.EventHandler(this.tsBtnLabels_Click);
+            // 
+            // tsBtnHistory
+            // 
+            this.tsBtnHistory.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnHistory.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnHistory.Image")));
+            this.tsBtnHistory.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnHistory.Name = "tsBtnHistory";
+            this.tsBtnHistory.Size = new System.Drawing.Size(92, 33);
+            this.tsBtnHistory.Text = "History";
+            this.tsBtnHistory.Click += new System.EventHandler(this.tsBtnHistory_Click);
             // 
             // dataGridViewDisassembler
             // 
@@ -232,16 +243,6 @@
             this.labelStringView.TabIndex = 6;
             this.labelStringView.Text = "HELLO WOLRD";
             this.labelStringView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tsBtnHistory
-            // 
-            this.tsBtnHistory.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tsBtnHistory.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnHistory.Image")));
-            this.tsBtnHistory.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsBtnHistory.Name = "tsBtnHistory";
-            this.tsBtnHistory.Size = new System.Drawing.Size(92, 33);
-            this.tsBtnHistory.Text = "History";
-            this.tsBtnHistory.Click += new System.EventHandler(this.tsBtnHistory_Click);
             // 
             // DisassemblerControl
             // 

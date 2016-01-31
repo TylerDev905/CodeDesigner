@@ -20,7 +20,7 @@ namespace CodeDesigner
         public FormMain()
         {
             InitializeComponent();
-            webBrowser1.Navigate("http://www.gamehacking.org");
+            webBrowser1.Navigate("http://gamehacking.org/vb");
         }
 
         private void runToolStripMenuItem_Click(object sender, EventArgs e)
@@ -36,7 +36,6 @@ namespace CodeDesigner
 
         private void assemblerControl1_Load(object sender, EventArgs e)
         {
-            
         }
 
         private void tsmOpen_Click(object sender, EventArgs e)
@@ -66,6 +65,7 @@ namespace CodeDesigner
                         tab.Controls.Add(controlBin);
                         tabControlEx1.Controls.Add(tab);
                         break;
+
                     case ".asm":
                         var controlAsm = new AssemblerControl()
                         {
@@ -76,6 +76,11 @@ namespace CodeDesigner
                         controlAsm.LoadSource();
                         tab.Controls.Add(controlAsm);
                         tabControlEx1.Controls.Add(tab);
+                        break;
+
+                    case ".txt":
+                        var disassembler = (DisassemblerControl)tabControlEx1.SelectedTab.Controls[0];
+                        disassembler.LoadLabelsFromFile(openFileDialog.FileName);
                         break;
                 }
             } 

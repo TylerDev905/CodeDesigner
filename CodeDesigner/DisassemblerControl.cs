@@ -18,7 +18,7 @@ namespace CodeDesigner
         public byte[] MemoryDump { get; set; }
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
-        public int PageEnd{ get; set; } = 100;
+        public int PageEnd{ get; set; } = 250;
         public bool IsInsert { get; set; } = false;
         public Mips32 mips { get; set; }
         public List<Label> Labels { get; set; } = new List<Label>();
@@ -226,6 +226,31 @@ namespace CodeDesigner
             }
         }
         
+        public void LoadLabelsFromFile(string path)
+        {
+            var text = System.IO.File.ReadAllText(path);
+
+            MatchCollection matches = Regex.Matches(text.Replace("\r", ""), @"(\b[A-Z0-9\.\-\*\(\)\[\]\\\/\=\,\&\~ \. \%\^]{3,})[\n ]{0,}([a-f0-9]{8}[ ]{1}[a-fA0-9]{8}[ ]{0,}[\n]{0,1}){1,}[ ]{0,}[\n]{0,1}", RegexOptions.IgnoreCase);
+            foreach (Match item in matches)
+            {
+                var x = 0;
+                foreach (string stringItem in item.Groups[0].Value.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (Regex.IsMatch(stringItem, Theme.WordPattern))
+                    {
+                        var value = x == 0 ? string.Empty : "_"+ x.ToString();
+                        Labels.Add(new Label()
+                        {
+                            Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
+                            Text = $" {item.Groups[1].Value.Trim()}{value}"
+                        });
+                    }
+                    x++;
+                }
+            }
+
+        }
+
         public void UpdateStringView()
         {
             if (dataGridViewDisassembler.SelectedRows.Count > 0)
@@ -383,6 +408,16 @@ namespace CodeDesigner
         private void tsBtnHistory_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void tsBtnLabels_Click(object sender, EventArgs e)
+        {
+            var formSearch = new FormSearch() { Collection = Labels };
+            formSearch.ShowDialog();
+            if (formSearch.Address != string.Empty)
+            {
+                GoToAddress(formSearch.Address);
+            }
         }
     }
 }
