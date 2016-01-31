@@ -18,7 +18,7 @@ namespace CodeDesigner
         public byte[] MemoryDump { get; set; }
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
-        public int PageEnd { get; set; } = 250;
+        public int PageEnd { get; set; } = 175;
         public bool IsInsert { get; set; } = false;
         public Mips32 mips { get; set; }
         public List<Label> Labels { get; set; } = new List<Label>();
@@ -336,8 +336,8 @@ namespace CodeDesigner
                 var byte2 = i - 2;
                 var byte3 = i - 1;
 
-                var label = Labels.Where(z => z.Address == byte1).FirstOrDefault();
-                var comment = Comments.Where(z => z.Address == byte1).FirstOrDefault();
+                var label = Labels.FirstOrDefault(z => z.Address == byte1);
+                var comment = Comments.FirstOrDefault(z => z.Address == byte1);
 
                 var stringFound = Strings.FirstOrDefault(z => z.Address == byte1);
 
@@ -365,10 +365,20 @@ namespace CodeDesigner
                 switch (type)
                 {
                     case AddressType.Byte:
-                        AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[byte1])} ]", label, comment);
-                        AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]", label, comment);
-                        AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]", label, comment);
-                        AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[i])} ]", label, comment);
+                        if (IsInsert)
+                        {
+                            AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[i])} ]", label, comment);
+                            AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]", label, comment);
+                            AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]", label, comment);
+                            AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[byte1])} ]", label, comment);
+                        }
+                        else
+                        {
+                            AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[byte1])} ]", label, comment);
+                            AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]", label, comment);
+                            AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]", label, comment);
+                            AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[i])} ]", label, comment);
+                        }
                         break;
 
                     case AddressType.Halfword:
