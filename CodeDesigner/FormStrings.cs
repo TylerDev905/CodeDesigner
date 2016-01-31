@@ -16,8 +16,9 @@ namespace CodeDesigner
         private BackgroundWorker worker { get; set; } = new BackgroundWorker();
         public byte[] MemoryDump { get; set; }
         public List<string> Items { get; set; }  = new List<string>();
-        public int Address { get; set; } 
-
+        public int Address { get; set; }
+        public List<DisassemblerControl.StringMatch> Strings { get; set; } = new List<DisassemblerControl.StringMatch>();
+        
         public FormStrings()
         {
             InitializeComponent();
@@ -99,8 +100,15 @@ namespace CodeDesigner
                         reset = true;
                         var item = Encoding.ASCII.GetString(buffer.ToArray());
                         if (letterCount > 2)
-                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item);
-                        
+                        {
+                            var offset = Convert.ToString((int)(Math.Ceiling(((float)matchCount / 4.0))) * 4, 16);
+                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item + " Length: " + offset);
+                            Strings.Add(new DisassemblerControl.StringMatch() {
+                                Address = addressInt,
+                                Offset = (int)(Math.Ceiling(((float)matchCount / 4.0))) * 4,
+                                Item = Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item
+                            });
+                        }
                         worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
                         buffer.Clear();
                     }

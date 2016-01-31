@@ -18,12 +18,24 @@ namespace CodeDesigner
         public byte[] MemoryDump { get; set; }
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
-        public int PageEnd{ get; set; } = 250;
+        public int PageEnd { get; set; } = 250;
         public bool IsInsert { get; set; } = false;
         public Mips32 mips { get; set; }
         public List<Label> Labels { get; set; } = new List<Label>();
         public List<Comment> Comments { get; set; } = new List<Comment>();
         public List<string> History { get; set; } = new List<string>();
+        public List<StringMatch> Strings { get; set; } = new List<StringMatch>();
+        public int StringAddress { get; set; }
+        public int StringOffset { get; set; }
+
+
+
+        public class StringMatch
+        {
+            public int Address { get; set; }
+            public int Offset { get; set; }
+            public string Item { get; set; }
+        }
 
         public DisassemblerControl()
         {
@@ -65,7 +77,7 @@ namespace CodeDesigner
 
         public void LoadMemoryDump()
         {
-            if(MemoryDumpPath != string.Empty)
+            if (MemoryDumpPath != string.Empty)
             {
                 if (System.IO.File.Exists(MemoryDumpPath))
                 {
@@ -76,11 +88,11 @@ namespace CodeDesigner
             else
                 MemoryDump = new byte[MemoryDumpSize];
         }
-        
+
         public void Start()
         {
             var memoryIndex = PageStart;
-            while(memoryIndex < PageStart + PageEnd)
+            while (memoryIndex < PageStart + PageEnd)
             {
                 AddDisassembledRow(AddressType.Operation, memoryIndex);
                 memoryIndex += 4;
@@ -145,7 +157,7 @@ namespace CodeDesigner
 
         public void OnCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            if(this.dataGridViewDisassembler.Columns["ColumnOperation"].Index == e.ColumnIndex && e.RowIndex >= 0 && this.dataGridViewDisassembler.SelectedRows.Contains(this.dataGridViewDisassembler.Rows[e.RowIndex]) == false)
+            if (this.dataGridViewDisassembler.Columns["ColumnOperation"].Index == e.ColumnIndex && e.RowIndex >= 0 && this.dataGridViewDisassembler.SelectedRows.Contains(this.dataGridViewDisassembler.Rows[e.RowIndex]) == false)
             {
                 var rectangle = new Rectangle(e.CellBounds.X, e.CellBounds.Y, e.CellBounds.Width, e.CellBounds.Height);
                 using (Brush gridBrush = new SolidBrush(this.dataGridViewDisassembler.GridColor), backColorBrush = new SolidBrush(e.CellStyle.BackColor))
@@ -156,7 +168,8 @@ namespace CodeDesigner
                                 .Replace("(", " ( ")
                                 .Replace(")", " )")
                                 .Replace("$", "$ ")
-                                .Replace("[", "[ ");
+                                .Replace("[", "[ ")
+                                .Replace("]", " ]");
 
                     var args = value.ToString().Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -177,12 +190,12 @@ namespace CodeDesigner
                             x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width - 5;
                         }
 
-                        else if(Regex.IsMatch(arg, Theme.HalfWordPattern) || Regex.IsMatch(arg, Theme.WordPattern))
+                        else if (Regex.IsMatch(arg, Theme.HalfWordPattern) || Regex.IsMatch(arg, Theme.WordPattern))
                         {
                             e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.OldLace, x, y, StringFormat.GenericDefault);
                             x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width - 5;
                         }
-                        
+
                         else if (Regex.IsMatch(arg, Theme.RegisterPattern1))
                         {
                             e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.Goldenrod, x, y, StringFormat.GenericDefault);
@@ -212,14 +225,25 @@ namespace CodeDesigner
                             e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.DeepSkyBlue, x, y, StringFormat.GenericDefault);
                             x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width - 5;
                         }
-                        
+
                         else if (arg.Contains(")") || arg.Contains(","))
                         {
                             e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.Azure, x, y, StringFormat.GenericDefault);
                             x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width + 5;
                         }
 
+                        else if (arg.Contains("]"))
+                        {
+                            x += 10;
+                            e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.Azure, x, y, StringFormat.GenericDefault);
+                            x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width;
+                        }
                         else if (arg.Contains(",") || arg.Contains("(") || arg.Contains("$"))
+                        {
+                            e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.Azure, x, y, StringFormat.GenericDefault);
+                            x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width - 5;
+                        }
+                        else
                         {
                             e.Graphics.DrawString(arg, e.CellStyle.Font, Brushes.Azure, x, y, StringFormat.GenericDefault);
                             x += (int)e.Graphics.MeasureString(arg, e.CellStyle.Font).Width - 5;
@@ -230,11 +254,12 @@ namespace CodeDesigner
                 }
             }
         }
-        
+
         public void LoadLabelsFromFile(string path)
         {
             var text = string.Empty;
-            try {
+            try
+            {
                 text = System.IO.File.ReadAllText(path);
             }
             catch
@@ -250,7 +275,7 @@ namespace CodeDesigner
                 {
                     if (Regex.IsMatch(stringItem, Theme.WordPattern))
                     {
-                        var value = x == 0 ? string.Empty : "_"+ x.ToString();
+                        var value = x == 0 ? string.Empty : "_" + x.ToString();
                         Labels.Add(new Label()
                         {
                             Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
@@ -314,31 +339,51 @@ namespace CodeDesigner
                 var label = Labels.Where(z => z.Address == byte1).FirstOrDefault();
                 var comment = Comments.Where(z => z.Address == byte1).FirstOrDefault();
 
+                var stringFound = Strings.FirstOrDefault(z => z.Address == byte1);
+
+                if (stringFound != null)
+                {
+                    StringAddress = stringFound.Address;
+                    StringOffset = stringFound.Offset;
+                }
+
+                if (byte1 <= StringAddress + StringOffset)
+                {
+                    type = AddressType.Byte;
+                }
+
+                if(byte1 == StringAddress + StringOffset - 4)
+                {
+                    StringAddress = 0;
+                    StringOffset = 0;
+                }
+
                 var address = Convert.ToString((byte1), 16).PadLeft(8, '0');
-                    var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
+                var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
 
-                    switch (type)
-                    {
-                        case AddressType.Byte:
-                            AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[i])} ]", label, comment);
-                            AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]", label, comment);
-                            AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]", label, comment);
-                            AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[byte1])} ]", label, comment);
-                            break;
 
-                        case AddressType.Halfword:
-                            AddRow(ToAddress(byte1), "----" + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]), $".halfword", label, comment);
-                            AddRow(ToAddress(byte3), ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + "----", $".halfword", label, comment);
-                            break;
+                switch (type)
+                {
+                    case AddressType.Byte:
+                        AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[byte1])} ]", label, comment);
+                        AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]", label, comment);
+                        AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]", label, comment);
+                        AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[i])} ]", label, comment);
+                        break;
 
-                        case AddressType.Word:
-                            AddRow(ToAddress(byte1), word, ".word", label, comment);
-                            break;
+                    case AddressType.Halfword:
+                        AddRow(ToAddress(byte1), "----" + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]), $".halfword", label, comment);
+                        AddRow(ToAddress(byte3), ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + "----", $".halfword", label, comment);
+                        break;
 
-                        case AddressType.Operation:
-                            AddRow(ToAddress(byte1), word, mips.Disassemble(word), label, comment);
-                            break;
-                    }             
+                    case AddressType.Word:
+                        AddRow(ToAddress(byte1), word, ".word", label, comment);
+                        break;
+
+                    case AddressType.Operation:
+                        AddRow(ToAddress(byte1), word, mips.Disassemble(word), label, comment);
+                        break;
+                }
             }
         }
 
@@ -382,10 +427,10 @@ namespace CodeDesigner
 
         private void tsBtnAddress_Click(object sender, EventArgs e)
         {
-            if(Regex.IsMatch(tsTbAddress.Text, Theme.WordPattern))
+            if (Regex.IsMatch(tsTbAddress.Text, Theme.WordPattern))
             {
                 IsInsert = false;
-                
+
                 dataGridViewDisassembler.Rows.Clear();
                 var address = Convert.ToInt32(tsTbAddress.Text, 16);
                 History.Add(Convert.ToString(address, 16).PadLeft(8, '0') + " " + DateTime.Now.ToString("yyyy/dd/mm hh:mm:ss"));
@@ -406,6 +451,7 @@ namespace CodeDesigner
 
             if (formStringsDump.Address != 0)
             {
+                Strings = formStringsDump.Strings;
                 IsInsert = false;
                 dataGridViewDisassembler.Rows.Clear();
                 PageStart = formStringsDump.Address;
