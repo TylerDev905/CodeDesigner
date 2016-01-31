@@ -23,6 +23,7 @@ namespace CodeDesigner
         public Mips32 mips { get; set; }
         public List<Label> Labels { get; set; } = new List<Label>();
         public List<Comment> Comments { get; set; } = new List<Comment>();
+        public List<string> History { get; set; } = new List<string>();
 
         public DisassemblerControl()
         {
@@ -67,7 +68,10 @@ namespace CodeDesigner
             if(MemoryDumpPath != string.Empty)
             {
                 if (System.IO.File.Exists(MemoryDumpPath))
+                {
                     MemoryDump = System.IO.File.ReadAllBytes(MemoryDumpPath);
+                    LoadLabelsFromFile(System.IO.Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".txt");
+                }
             }
             else
                 MemoryDump = new byte[MemoryDumpSize];
@@ -112,6 +116,7 @@ namespace CodeDesigner
             var addressInt = Convert.ToInt32(Parse.WithRegex(address, Theme.WordPattern), 16);
             if (addressInt < MemoryDump.Length)
             {
+                History.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + DateTime.Now.ToString("yyyy/dd/mm hh:mm:ss"));
                 IsInsert = false;
                 dataGridViewDisassembler.Rows.Clear();
                 PageStart = addressInt;
@@ -228,9 +233,16 @@ namespace CodeDesigner
         
         public void LoadLabelsFromFile(string path)
         {
-            var text = System.IO.File.ReadAllText(path);
+            var text = string.Empty;
+            try {
+                text = System.IO.File.ReadAllText(path);
+            }
+            catch
+            {
+                text = System.IO.File.ReadAllText("codes.txt");
+            }
 
-            MatchCollection matches = Regex.Matches(text.Replace("\r", ""), @"(\b[A-Z0-9\.\-\*\(\)\[\]\\\/\=\,\&\~ \. \%\^]{3,})[\n ]{0,}([a-f0-9]{8}[ ]{1}[a-fA0-9]{8}[ ]{0,}[\n]{0,1}){1,}[ ]{0,}[\n]{0,1}", RegexOptions.IgnoreCase);
+            MatchCollection matches = Regex.Matches(text.Replace("\r", ""), @"(\b[A-Z0-9\.\-\*\(\)\[\]\\\/\=\,\&\?\~ \. \%\^]{3,})[\n ]{0,}([a-f0-9]{8}[ ]{1}[a-fA0-9]{8}[ ]{0,}[\n]{0,1}){1,}[ ]{0,}[\n]{0,1}", RegexOptions.IgnoreCase);
             foreach (Match item in matches)
             {
                 var x = 0;
@@ -373,8 +385,10 @@ namespace CodeDesigner
             if(Regex.IsMatch(tsTbAddress.Text, Theme.WordPattern))
             {
                 IsInsert = false;
+                
                 dataGridViewDisassembler.Rows.Clear();
                 var address = Convert.ToInt32(tsTbAddress.Text, 16);
+                History.Add(Convert.ToString(address, 16).PadLeft(8, '0') + " " + DateTime.Now.ToString("yyyy/dd/mm hh:mm:ss"));
                 PageStart = address;
                 Start();
                 dataGridViewDisassembler.Rows[0].Selected = true;
@@ -407,7 +421,12 @@ namespace CodeDesigner
 
         private void tsBtnHistory_Click(object sender, EventArgs e)
         {
-
+            var formHistory = new FormHistory() { Collection = History };
+            formHistory.ShowDialog();
+            if (formHistory.Address != string.Empty)
+            {
+                GoToAddress(formHistory.Address);
+            }
         }
 
         private void tsBtnLabels_Click(object sender, EventArgs e)
