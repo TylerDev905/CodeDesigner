@@ -46,6 +46,7 @@
             this.ColumnLabel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelStringView = new CodeDesigner.LabelStringView();
+            this.tsBtnHistory = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDisassembler)).BeginInit();
             this.SuspendLayout();
@@ -57,7 +58,8 @@
             this.tsBtnAddress,
             this.tsBtnSearch,
             this.tsBtnStrings,
-            this.tsBtnLabels});
+            this.tsBtnLabels,
+            this.tsBtnHistory});
             this.toolStrip1.Location = new System.Drawing.Point(0, 25);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
@@ -78,15 +80,16 @@
             // tsBtnAddress
             // 
             this.tsBtnAddress.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.tsBtnAddress.BackColor = System.Drawing.SystemColors.Control;
+            this.tsBtnAddress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.tsBtnAddress.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tsBtnAddress.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tsBtnAddress.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tsBtnAddress.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.tsBtnAddress.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnAddress.Image")));
             this.tsBtnAddress.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsBtnAddress.Name = "tsBtnAddress";
-            this.tsBtnAddress.Size = new System.Drawing.Size(76, 33);
-            this.tsBtnAddress.Text = "Address";
+            this.tsBtnAddress.Size = new System.Drawing.Size(31, 33);
+            this.tsBtnAddress.Text = "GO";
+            this.tsBtnAddress.ToolTipText = "Go";
             this.tsBtnAddress.Click += new System.EventHandler(this.tsBtnAddress_Click);
             // 
             // tsBtnSearch
@@ -98,6 +101,7 @@
             this.tsBtnSearch.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
             this.tsBtnSearch.Size = new System.Drawing.Size(83, 33);
             this.tsBtnSearch.Text = "Search";
+            this.tsBtnSearch.Click += new System.EventHandler(this.tsBtnSearch_Click);
             // 
             // tsBtnStrings
             // 
@@ -229,6 +233,16 @@
             this.labelStringView.Text = "HELLO WOLRD";
             this.labelStringView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // tsBtnHistory
+            // 
+            this.tsBtnHistory.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnHistory.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnHistory.Image")));
+            this.tsBtnHistory.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnHistory.Name = "tsBtnHistory";
+            this.tsBtnHistory.Size = new System.Drawing.Size(92, 33);
+            this.tsBtnHistory.Text = "History";
+            this.tsBtnHistory.Click += new System.EventHandler(this.tsBtnHistory_Click);
+            // 
             // DisassemblerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -260,5 +274,6 @@
         private System.Windows.Forms.ToolStripButton tsBtnSearch;
         private System.Windows.Forms.ToolStripButton tsBtnStrings;
         private System.Windows.Forms.ToolStripButton tsBtnLabels;
+        private System.Windows.Forms.ToolStripButton tsBtnHistory;
     }
 }

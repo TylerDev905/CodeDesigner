@@ -43,7 +43,7 @@
             this.tbSearch.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tbSearch.Location = new System.Drawing.Point(0, 0);
             this.tbSearch.Name = "tbSearch";
-            this.tbSearch.Size = new System.Drawing.Size(736, 25);
+            this.tbSearch.Size = new System.Drawing.Size(339, 25);
             this.tbSearch.TabIndex = 1;
             // 
             // statusStrip1
@@ -52,10 +52,10 @@
             this.toolStripStatusLabel2,
             this.toolStripProgressBar1,
             this.tssLProgress});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 538);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 470);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.statusStrip1.Size = new System.Drawing.Size(736, 23);
+            this.statusStrip1.Size = new System.Drawing.Size(339, 23);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -87,14 +87,14 @@
             this.lbStringDumper.ItemHeight = 19;
             this.lbStringDumper.Location = new System.Drawing.Point(0, 25);
             this.lbStringDumper.Name = "lbStringDumper";
-            this.lbStringDumper.Size = new System.Drawing.Size(736, 513);
+            this.lbStringDumper.Size = new System.Drawing.Size(339, 445);
             this.lbStringDumper.TabIndex = 3;
             // 
             // FormStrings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(736, 561);
+            this.ClientSize = new System.Drawing.Size(339, 493);
             this.Controls.Add(this.lbStringDumper);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tbSearch);

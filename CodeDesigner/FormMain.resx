@@ -123,15 +123,17 @@
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="runToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAACxMAAAsTAQCanBgAAACGSURBVDhP1dExCoNAEEbhVS9giDcRD2QR0uQ0AcHCywiC
-        4D0Eg5gbJPEpTrPMRk0VH3zFFv80a/6uDhlO8+uHPoseF/jYlRwQDRJszj4weaNAhNW0A+KJGwI404a2
-        Cs60ga2EM20gBlzx9We04Qs5zljNHteIsTkZPpDCw65a3BHOrwNkzAhvF0UEZrAWRgAAAABJRU5ErkJg
-        gg==
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
+        EwAACxMBAJqcGAAAAIZJREFUOE/V0TEKg0AQRuFVL2CINxEPZBHS5DQBwcLLCILgPQSDmBsk8SlOs8xG
+        TRUffMUW/zRr/q4OGU7z64c+ix4X+NiVHBANEmzOPjB5o0CE1bQD4okbAjjThrYKzrSBrYQzbSAGXPH1
+        Z7ThCznOWM0e14ixORk+kMLDrlrcEc6vA2TMCG8XRQRmsBZGAAAAAElFTkSuQmCC
 </value>
   </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>364, 17</value>
+  </metadata>
+  <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>480, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>69</value>

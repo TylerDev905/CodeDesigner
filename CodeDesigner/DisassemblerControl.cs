@@ -21,6 +21,8 @@ namespace CodeDesigner
         public int PageEnd{ get; set; } = 100;
         public bool IsInsert { get; set; } = false;
         public Mips32 mips { get; set; }
+        public List<Label> Labels { get; set; } = new List<Label>();
+        public List<Comment> Comments { get; set; } = new List<Comment>();
 
         public DisassemblerControl()
         {
@@ -29,9 +31,37 @@ namespace CodeDesigner
             dataGridViewDisassembler.CellPainting += new DataGridViewCellPaintingEventHandler(OnCellPainting);
             dataGridViewDisassembler.SelectionChanged += new EventHandler(OnSelected);
             dataGridViewDisassembler.KeyUp += new KeyEventHandler(OnKeyPressed);
+            dataGridViewDisassembler.CellEndEdit += new DataGridViewCellEventHandler(OnCellEdit);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         }
-        
+
+        public void OnCellEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (this.dataGridViewDisassembler.Columns["ColumnLabel"].Index == e.ColumnIndex)
+            {
+                if (dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != string.Empty)
+                {
+                    Labels.Add(new Label()
+                    {
+                        Address = Convert.ToInt32(dataGridViewDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
+                        Text = dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                    });
+                }
+            }
+
+            if (this.dataGridViewDisassembler.Columns["ColumnComment"].Index == e.ColumnIndex)
+            {
+                if (dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != string.Empty)
+                {
+                    Comments.Add(new Comment()
+                    {
+                        Address = Convert.ToInt32(dataGridViewDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
+                        Text = dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                    });
+                }
+            }
+        }
+
         public void LoadMemoryDump()
         {
             if(MemoryDumpPath != string.Empty)
@@ -99,6 +129,7 @@ namespace CodeDesigner
                     CursorUp();
                     UpdateStringView();
                     break;
+
                 case Keys.Down:
                     IsInsert = false;
                     CursorDown();
@@ -243,46 +274,67 @@ namespace CodeDesigner
                 var byte2 = i - 2;
                 var byte3 = i - 1;
 
+                var label = Labels.Where(z => z.Address == byte1).FirstOrDefault();
+                var comment = Comments.Where(z => z.Address == byte1).FirstOrDefault();
+
                 var address = Convert.ToString((byte1), 16).PadLeft(8, '0');
-                var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
-                
-                switch (type)
-                {
-                    case AddressType.Byte:
-                        AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[i])} ]");
-                        AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]");
-                        AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]");
-                        AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[byte1])} ]");
-                        break;
-                    case AddressType.Halfword:
-                        AddRow(ToAddress(byte1), "----" + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]), $".halfword");
-                        AddRow(ToAddress(byte3), ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + "----", $".halfword");
-                        break;
-                    case AddressType.Word:
-                        AddRow(ToAddress(byte1), word, ".word");
-                        break;
-                    case AddressType.Operation:
-                        AddRow(ToAddress(byte1), word, mips.Disassemble(word));
-                        break;
-                }
+                    var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
+
+                    switch (type)
+                    {
+                        case AddressType.Byte:
+                            AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscci(MemoryDump[i])} ]", label, comment);
+                            AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscci(MemoryDump[byte3])} ]", label, comment);
+                            AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscci(MemoryDump[byte2])} ]", label, comment);
+                            AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscci(MemoryDump[byte1])} ]", label, comment);
+                            break;
+
+                        case AddressType.Halfword:
+                            AddRow(ToAddress(byte1), "----" + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]), $".halfword", label, comment);
+                            AddRow(ToAddress(byte3), ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + "----", $".halfword", label, comment);
+                            break;
+
+                        case AddressType.Word:
+                            AddRow(ToAddress(byte1), word, ".word", label, comment);
+                            break;
+
+                        case AddressType.Operation:
+                            AddRow(ToAddress(byte1), word, mips.Disassemble(word), label, comment);
+                            break;
+                    }             
             }
         }
 
-        public void AddRow(string address, string data, string disassembled)
+        public void AddRow(string address, string data, string disassembled, Label label, Comment comment)
         {
             var row = new DataGridViewRow();
             row.CreateCells(this.dataGridViewDisassembler);
             row.Cells[0].Value = address;
             row.Cells[1].Value = data;
             row.Cells[2].Value = disassembled;
-            row.Cells[3].Value = "";
-            row.Cells[4].Value = "";
+
+            if (label != null)
+            {
+                row.Cells[3].Value = label.Text;
+            }
+
+            if (comment != null)
+            {
+                row.Cells[4].Value = comment.Text;
+            }
+
             var cursor = dataGridViewDisassembler.SelectedRows.Count == 0 ? MemoryDumpSize : dataGridViewDisassembler.SelectedRows[0].Index;
 
             if (IsInsert)
+            {
                 this.dataGridViewDisassembler.Rows.Insert(0, row);
+            }
+
             else
+            {
                 this.dataGridViewDisassembler.Rows.Add(row);
+            }
+
         }
 
         private string ByteToText(byte byteData) => Convert.ToString(Convert.ToInt32(byteData), 16).PadLeft(2, '0');
@@ -321,6 +373,16 @@ namespace CodeDesigner
                 Start();
                 dataGridViewDisassembler.Rows[0].Selected = true;
             }
+        }
+
+        private void tsBtnSearch_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tsBtnHistory_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
