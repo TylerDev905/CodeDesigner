@@ -31,19 +31,23 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tabControlEx1 = new CodeDesigner.TabControlEx();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.assemblerControl1 = new CodeDesigner.AssemblerControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.disassemblerControl1 = new CodeDesigner.DisassemblerControl();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
             this.tabControlEx1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,9 +69,18 @@
             // 
             // fileToolStripMenuItem
             // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmOpen});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(52, 22);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // tsmOpen
+            // 
+            this.tsmOpen.Name = "tsmOpen";
+            this.tsmOpen.Size = new System.Drawing.Size(152, 22);
+            this.tsmOpen.Text = "Open";
+            this.tsmOpen.Click += new System.EventHandler(this.tsmOpen_Click);
             // 
             // runToolStripMenuItem
             // 
@@ -105,8 +118,7 @@
             // 
             // tabControlEx1
             // 
-            this.tabControlEx1.Controls.Add(this.tabPage1);
-            this.tabControlEx1.Controls.Add(this.tabPage2);
+            this.tabControlEx1.Controls.Add(this.tabPage4);
             this.tabControlEx1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlEx1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControlEx1.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -117,9 +129,28 @@
             this.tabControlEx1.Size = new System.Drawing.Size(905, 526);
             this.tabControlEx1.TabIndex = 7;
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.webBrowser1);
+            this.tabPage4.Location = new System.Drawing.Point(4, 27);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(897, 495);
+            this.tabPage4.TabIndex = 0;
+            this.tabPage4.Text = "Gamehacking.org";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // webBrowser1
+            // 
+            this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webBrowser1.Location = new System.Drawing.Point(3, 3);
+            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.Size = new System.Drawing.Size(891, 489);
+            this.webBrowser1.TabIndex = 0;
+            // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.assemblerControl1);
             this.tabPage1.Location = new System.Drawing.Point(4, 27);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -127,21 +158,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // assemblerControl1
-            // 
-            this.assemblerControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.assemblerControl1.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.assemblerControl1.Location = new System.Drawing.Point(3, 3);
-            this.assemblerControl1.Margin = new System.Windows.Forms.Padding(0);
-            this.assemblerControl1.Name = "assemblerControl1";
-            this.assemblerControl1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 10);
-            this.assemblerControl1.Size = new System.Drawing.Size(891, 489);
-            this.assemblerControl1.Source = "";
-            this.assemblerControl1.SourceMips = null;
-            this.assemblerControl1.SourcePath = "C:\\Users\\Tyler\\Desktop\\test.txt";
-            this.assemblerControl1.TabIndex = 0;
-            this.assemblerControl1.Load += new System.EventHandler(this.assemblerControl1_Load);
             // 
             // tabPage2
             // 
@@ -166,25 +182,40 @@
             this.disassemblerControl1.mips = null;
             this.disassemblerControl1.Name = "disassemblerControl1";
             this.disassemblerControl1.PageEnd = 2000;
-            this.disassemblerControl1.PageIndex = 0;
             this.disassemblerControl1.PageStart = 0;
             this.disassemblerControl1.Size = new System.Drawing.Size(891, 489);
             this.disassemblerControl1.TabIndex = 0;
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "openFileDialog";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Location = new System.Drawing.Point(4, 27);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(897, 495);
+            this.tabPage3.TabIndex = 0;
+            this.tabPage3.Text = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(905, 574);
             this.Controls.Add(this.tabControlEx1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.Name = "FormMain";
             this.Text = "Code Designer";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControlEx1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -197,13 +228,17 @@
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
         private TabControlEx tabControlEx1;
         private System.Windows.Forms.TabPage tabPage1;
-        private AssemblerControl assemblerControl1;
         private System.Windows.Forms.TabPage tabPage2;
         private DisassemblerControl disassemblerControl1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsmOpen;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.WebBrowser webBrowser1;
     }
 }
 

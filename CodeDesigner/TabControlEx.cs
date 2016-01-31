@@ -7,8 +7,6 @@ namespace CodeDesigner
 
     class TabControlEx : TabControl
     {
-
-
         public string pathCloseImg = "\\images\\close.png";
         public string onCloseMsg = "Would you like to Close this Tab?";
 
