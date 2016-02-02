@@ -1,15 +1,6 @@
-﻿using FastColoredTextBoxNS;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace CodeDesigner
 {
@@ -30,12 +21,12 @@ namespace CodeDesigner
             {
                 var asm = (AssemblerControl)tabControlEx1.SelectedTab.Controls[0];
                 asm.Run();
-            }
-            
+            }      
         }
 
         private void assemblerControl1_Load(object sender, EventArgs e)
         {
+
         }
 
         private void tsmOpen_Click(object sender, EventArgs e)
@@ -44,16 +35,15 @@ namespace CodeDesigner
             {
                 var tab = new TabPage()
                 {
-                    Text = System.IO.Path.GetFileNameWithoutExtension(openFileDialog.FileName),
+                    Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName),
                     Tag = openFileDialog.FileName,
                 };
 
-                var ext= System.IO.Path.GetExtension(openFileDialog.FileName);
+                var ext = Path.GetExtension(openFileDialog.FileName);
 
                 switch (ext)
                 {
                     case ".bin":
-
                         var controlBin = new DisassemblerControl()
                         {
                             MemoryDumpPath = openFileDialog.FileName,
@@ -76,11 +66,6 @@ namespace CodeDesigner
                         controlAsm.LoadSource();
                         tab.Controls.Add(controlAsm);
                         tabControlEx1.Controls.Add(tab);
-                        break;
-
-                    case ".txt":
-                        var disassembler = (DisassemblerControl)tabControlEx1.SelectedTab.Controls[0];
-                        disassembler.LoadLabelsFromFile(openFileDialog.FileName);
                         break;
                 }
             } 

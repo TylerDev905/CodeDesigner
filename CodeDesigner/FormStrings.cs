@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CodeDesigner
@@ -70,39 +67,31 @@ namespace CodeDesigner
                 for (int x = 0; x < 4; x++)
                 {
                     if (x == 0 && matchCount == 0)
-                    {
                         addressInt = i;
-                    }
+
                     if (FileData[i + x] == 0 && matchCount == 0)
-                    {
                         nopCount = 1;
-                    }
+
                     else if (FileData[i + x] != 0 && FileData[i + x] > 31 && FileData[i + x] < 127)
                     {
                         matchCount++;
                         var character = FileData[i + x];
                         if (character > 47 && character < 58)
-                        {
                             numberCount++;
-                        }
                         if (character > 64 && character < 91)
-                        {
                             letterCount++;
-                        }
                         if (character > 96 && character < 123)
-                        {
                             letterCount++;
-                        }
                         buffer.Add(FileData[i + x]);
                     }
-                    else if (FileData[i + x] == 0 && matchCount > successCount && nopCount.Equals(1))
+                    else if (FileData[i + x] == 0 && matchCount > successCount && nopCount == 1)
                     {
                         reset = true;
                         var item = Encoding.ASCII.GetString(buffer.ToArray());
                         if (letterCount > 2)
                         {
                             var offset = Convert.ToString((int)(Math.Ceiling(((float)matchCount / 4.0))) * 4, 16);
-                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item + " Length: " + offset);
+                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item);
                             Strings.Add(new DisassemblerControl.StringMatch() {
                                 Address = addressInt,
                                 Offset = (int)(Math.Ceiling(((float)matchCount / 4.0))) * 4,
@@ -148,6 +137,5 @@ namespace CodeDesigner
             toolStripProgressBar1.Visible = false;
             tssLProgress.Visible = false;
         }
-
     }
 }

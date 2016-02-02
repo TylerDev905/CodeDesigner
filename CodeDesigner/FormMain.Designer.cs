@@ -174,7 +174,7 @@
             // 
             this.disassemblerControl1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.disassemblerControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.disassemblerControl1.IsInsert = false;
+            this.disassemblerControl1.RowType = DisassemblerControl.AddRowType.Up;
             this.disassemblerControl1.Location = new System.Drawing.Point(3, 3);
             this.disassemblerControl1.MemoryDump = null;
             this.disassemblerControl1.MemoryDumpPath = "C:\\Users\\Tyler\\Desktop\\pcsx2  fragment\\dump.bin";
