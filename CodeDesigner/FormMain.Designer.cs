@@ -78,7 +78,7 @@
             // tsmOpen
             // 
             this.tsmOpen.Name = "tsmOpen";
-            this.tsmOpen.Size = new System.Drawing.Size(152, 22);
+            this.tsmOpen.Size = new System.Drawing.Size(108, 22);
             this.tsmOpen.Text = "Open";
             this.tsmOpen.Click += new System.EventHandler(this.tsmOpen_Click);
             // 
@@ -110,7 +110,7 @@
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 552);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 565);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(905, 22);
             this.statusStrip1.TabIndex = 8;
@@ -126,7 +126,7 @@
             this.tabControlEx1.Name = "tabControlEx1";
             this.tabControlEx1.Padding = new System.Drawing.Point(25, 3);
             this.tabControlEx1.SelectedIndex = 0;
-            this.tabControlEx1.Size = new System.Drawing.Size(905, 526);
+            this.tabControlEx1.Size = new System.Drawing.Size(905, 539);
             this.tabControlEx1.TabIndex = 7;
             // 
             // tabPage4
@@ -135,7 +135,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 27);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(897, 495);
+            this.tabPage4.Size = new System.Drawing.Size(897, 508);
             this.tabPage4.TabIndex = 0;
             this.tabPage4.Text = "Gamehacking.org";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -146,7 +146,7 @@
             this.webBrowser1.Location = new System.Drawing.Point(3, 3);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(891, 489);
+            this.webBrowser1.Size = new System.Drawing.Size(891, 502);
             this.webBrowser1.TabIndex = 0;
             // 
             // tabPage1
@@ -174,7 +174,7 @@
             // 
             this.disassemblerControl1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.disassemblerControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.disassemblerControl1.RowType = DisassemblerControl.AddRowType.Up;
+            this.disassemblerControl1.History = ((System.Collections.Generic.List<string>)(resources.GetObject("disassemblerControl1.History")));
             this.disassemblerControl1.Location = new System.Drawing.Point(3, 3);
             this.disassemblerControl1.MemoryDump = null;
             this.disassemblerControl1.MemoryDumpPath = "C:\\Users\\Tyler\\Desktop\\pcsx2  fragment\\dump.bin";
@@ -183,7 +183,10 @@
             this.disassemblerControl1.Name = "disassemblerControl1";
             this.disassemblerControl1.PageEnd = 2000;
             this.disassemblerControl1.PageStart = 0;
+            this.disassemblerControl1.RowType = CodeDesigner.DisassemblerControl.AddRowType.Up;
             this.disassemblerControl1.Size = new System.Drawing.Size(891, 489);
+            this.disassemblerControl1.StringAddress = 0;
+            this.disassemblerControl1.StringOffset = 0;
             this.disassemblerControl1.TabIndex = 0;
             // 
             // openFileDialog
@@ -205,7 +208,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(905, 574);
+            this.ClientSize = new System.Drawing.Size(905, 587);
             this.Controls.Add(this.tabControlEx1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);

@@ -10,13 +10,13 @@ using System.Windows.Forms;
 
 namespace CodeDesigner
 {
-    public partial class FormSearch : Form
+    public partial class FormLabels : Form
     {
         public List<Label> Collection { get; set; }
         public string Address { get; set; } = string.Empty;
         public List<string> ListBoxItems { get; set; }
 
-        public FormSearch()
+        public FormLabels()
         {
             InitializeComponent();
             textBox1.TextChanged += new EventHandler(textBox1_Changed);

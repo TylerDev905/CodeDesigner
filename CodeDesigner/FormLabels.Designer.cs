@@ -1,6 +1,6 @@
 ﻿namespace CodeDesigner
 {
-    partial class FormSearch
+    partial class FormLabels
     {
         /// <summary>
         /// Required designer variable.

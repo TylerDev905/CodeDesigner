@@ -40,7 +40,7 @@
             this.tsBtnStrings = new System.Windows.Forms.ToolStripButton();
             this.tsBtnLabels = new System.Windows.Forms.ToolStripButton();
             this.tsBtnHistory = new System.Windows.Forms.ToolStripButton();
-            this.dataGridViewDisassembler = new CodeDesigner.DisassemblerGrid();
+            this.dgvDisassembler = new CodeDesigner.DisassemblerGrid();
             this.ColumnAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnOperation = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,7 +48,7 @@
             this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelStringView = new CodeDesigner.LabelStringView();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDisassembler)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDisassembler)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -133,15 +133,15 @@
             this.tsBtnHistory.Text = "History";
             this.tsBtnHistory.Click += new System.EventHandler(this.tsBtnHistory_Click);
             // 
-            // dataGridViewDisassembler
+            // dgvDisassembler
             // 
-            this.dataGridViewDisassembler.AllowUserToAddRows = false;
-            this.dataGridViewDisassembler.AllowUserToDeleteRows = false;
-            this.dataGridViewDisassembler.AllowUserToResizeRows = false;
-            this.dataGridViewDisassembler.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridViewDisassembler.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.dataGridViewDisassembler.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dataGridViewDisassembler.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
+            this.dgvDisassembler.AllowUserToAddRows = false;
+            this.dgvDisassembler.AllowUserToDeleteRows = false;
+            this.dgvDisassembler.AllowUserToResizeRows = false;
+            this.dgvDisassembler.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvDisassembler.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.dgvDisassembler.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvDisassembler.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -149,10 +149,10 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewDisassembler.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridViewDisassembler.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewDisassembler.ColumnHeadersVisible = false;
-            this.dataGridViewDisassembler.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgvDisassembler.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvDisassembler.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvDisassembler.ColumnHeadersVisible = false;
+            this.dgvDisassembler.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ColumnAddress,
             this.ColumnData,
             this.ColumnOperation,
@@ -165,11 +165,11 @@
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewDisassembler.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridViewDisassembler.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridViewDisassembler.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.dataGridViewDisassembler.Location = new System.Drawing.Point(0, 61);
-            this.dataGridViewDisassembler.Name = "dataGridViewDisassembler";
+            this.dgvDisassembler.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvDisassembler.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvDisassembler.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.dgvDisassembler.Location = new System.Drawing.Point(0, 61);
+            this.dgvDisassembler.Name = "dgvDisassembler";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopCenter;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Consolas", 11.25F);
@@ -177,16 +177,16 @@
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.CornflowerBlue;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewDisassembler.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dataGridViewDisassembler.RowHeadersVisible = false;
-            this.dataGridViewDisassembler.RowHeadersWidth = 5;
+            this.dgvDisassembler.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvDisassembler.RowHeadersVisible = false;
+            this.dgvDisassembler.RowHeadersWidth = 5;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.Control;
-            this.dataGridViewDisassembler.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.dataGridViewDisassembler.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.dataGridViewDisassembler.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewDisassembler.Size = new System.Drawing.Size(966, 306);
-            this.dataGridViewDisassembler.TabIndex = 7;
+            this.dgvDisassembler.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.dgvDisassembler.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.dgvDisassembler.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvDisassembler.Size = new System.Drawing.Size(966, 301);
+            this.dgvDisassembler.TabIndex = 7;
             // 
             // ColumnAddress
             // 
@@ -248,14 +248,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.dataGridViewDisassembler);
+            this.Controls.Add(this.dgvDisassembler);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.labelStringView);
             this.Name = "DisassemblerControl";
-            this.Size = new System.Drawing.Size(966, 367);
+            this.Size = new System.Drawing.Size(966, 362);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDisassembler)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDisassembler)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -263,7 +263,7 @@
 
         #endregion
         private LabelStringView labelStringView;
-        private DisassemblerGrid dataGridViewDisassembler;
+        private DisassemblerGrid dgvDisassembler;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnAddress;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnData;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnOperation;

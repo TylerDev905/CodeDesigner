@@ -15,7 +15,8 @@ namespace CodeDesigner
         public byte[] MemoryDump { get; set; }
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
-        public int PageEnd { get; set; } = 175;
+        public int PageSize { get; set; } = 176;
+        public int PageEnd { get; set; }
         public AddRowType RowType { get; set; } = AddRowType.Down;
         public Mips32 mips { get; set; }
         public List<Label> Labels { get; set; } = new List<Label>();
@@ -58,12 +59,13 @@ namespace CodeDesigner
 
         public DisassemblerControl()
         {
+            PageEnd = PageSize;
             InitializeComponent();
-            dataGridViewDisassembler.KeyDown += new KeyEventHandler(OnKeyPressedDown);
-            dataGridViewDisassembler.CellPainting += new DataGridViewCellPaintingEventHandler(OnCellPainting);
-            dataGridViewDisassembler.SelectionChanged += new EventHandler(OnSelected);
-            dataGridViewDisassembler.KeyUp += new KeyEventHandler(OnKeyPressed);
-            dataGridViewDisassembler.CellEndEdit += new DataGridViewCellEventHandler(OnCellEdit);
+            dgvDisassembler.KeyDown += new KeyEventHandler(OnKeyPressedDown);
+            dgvDisassembler.CellPainting += new DataGridViewCellPaintingEventHandler(OnCellPainting);
+            dgvDisassembler.SelectionChanged += new EventHandler(OnSelected);
+            dgvDisassembler.KeyUp += new KeyEventHandler(OnKeyPressed);
+            dgvDisassembler.CellEndEdit += new DataGridViewCellEventHandler(OnCellEdit);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
         }
         
@@ -78,7 +80,9 @@ namespace CodeDesigner
                 }
             }
             else
+            {
                 MemoryDump = new byte[MemoryDumpSize];
+            }
         }
 
         public void Start()
@@ -95,10 +99,10 @@ namespace CodeDesigner
 
         public void UpdateStringView()
         {
-            if (dataGridViewDisassembler.SelectedRows.Count > 0)
+            if (dgvDisassembler.SelectedRows.Count > 0)
             {
                 var bytes = new List<byte>();
-                var address = Convert.ToInt32(dataGridViewDisassembler.SelectedRows[0].Cells[0].Value.ToString(), 16);
+                var address = Convert.ToInt32(dgvDisassembler.SelectedRows[0].Cells[0].Value.ToString(), 16);
                 for (int i = address; i < address + 250; i++)
                     bytes.Add(MemoryDump[i] > 32 && MemoryDump[i] < 177 ? MemoryDump[i] : Convert.ToByte(46));
 
@@ -114,7 +118,7 @@ namespace CodeDesigner
 
         public void OnKeyPressed(object sender, KeyEventArgs e)
         {
-            var address = Convert.ToInt32(dataGridViewDisassembler.Rows[dataGridViewDisassembler.SelectedRows[0].Index].Cells[0].Value.ToString(), 16);
+            var address = Convert.ToInt32(dgvDisassembler.Rows[dgvDisassembler.SelectedRows[0].Index].Cells[0].Value.ToString(), 16);
             switch (e.KeyCode)
             {
                 case Keys.Right:
@@ -145,11 +149,11 @@ namespace CodeDesigner
 
         private void JumpToAddres()
         {
-            if (Regex.IsMatch(dataGridViewDisassembler.SelectedRows[0].Cells[2].Value.ToString(), Theme.WordPattern))
-                GoToAddress(dataGridViewDisassembler.SelectedRows[0].Cells[2].Value.ToString());
+            if (Regex.IsMatch(dgvDisassembler.SelectedRows[0].Cells[2].Value.ToString(), Theme.WordPattern))
+                GoToAddress(dgvDisassembler.SelectedRows[0].Cells[2].Value.ToString());
 
-            if (Regex.IsMatch(dataGridViewDisassembler.SelectedRows[0].Cells[1].Value.ToString(), Theme.WordPattern))
-                GoToAddress(dataGridViewDisassembler.SelectedRows[0].Cells[1].Value.ToString());
+            if (Regex.IsMatch(dgvDisassembler.SelectedRows[0].Cells[1].Value.ToString(), Theme.WordPattern))
+                GoToAddress(dgvDisassembler.SelectedRows[0].Cells[1].Value.ToString());
         }
 
         private void GoToAddress(string address)
@@ -159,10 +163,11 @@ namespace CodeDesigner
             {
                 History.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + DateTime.Now.ToString("yyyy/dd/mm hh:mm:ss"));
                 RowType = AddRowType.Down;
-                dataGridViewDisassembler.Rows.Clear();
+                dgvDisassembler.Rows.Clear();
                 PageStart = addressInt;
+                PageEnd = addressInt + PageSize;
                 Start();
-                dataGridViewDisassembler.Rows[0].Selected = true;
+                dgvDisassembler.Rows[0].Selected = true;
             }
         }
 
@@ -197,17 +202,17 @@ namespace CodeDesigner
         {
             if (PageEnd < MemoryDump.Length)
             {
-                PageEnd += 4;
                 AddDisassembledRow(AddressType.Operation, PageEnd);
+                PageEnd += 4;
             }
         }
         
         public void OnCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            if (this.dataGridViewDisassembler.Columns["ColumnOperation"].Index == e.ColumnIndex && e.RowIndex >= 0 && this.dataGridViewDisassembler.SelectedRows.Contains(this.dataGridViewDisassembler.Rows[e.RowIndex]) == false)
+            if (this.dgvDisassembler.Columns["ColumnOperation"].Index == e.ColumnIndex && e.RowIndex >= 0 && this.dgvDisassembler.SelectedRows.Contains(this.dgvDisassembler.Rows[e.RowIndex]) == false)
             {
                 var rectangle = new Rectangle(e.CellBounds.X, e.CellBounds.Y, e.CellBounds.Width, e.CellBounds.Height);
-                using (Brush gridBrush = new SolidBrush(this.dataGridViewDisassembler.GridColor), backColorBrush = new SolidBrush(e.CellStyle.BackColor))
+                using (Brush gridBrush = new SolidBrush(this.dgvDisassembler.GridColor), backColorBrush = new SolidBrush(e.CellStyle.BackColor))
                 {
                     e.Graphics.FillRectangle(backColorBrush, rectangle);
 
@@ -337,10 +342,10 @@ namespace CodeDesigner
 
         public void RemoveDisassembledRow()
         {
-            var selected = dataGridViewDisassembler.SelectedRows[0];
+            var selected = dgvDisassembler.SelectedRows[0];
             var index = selected.Index;
-            var data = selected.Cells[1].Value.ToString();
             var value = selected.Cells[2].Value.ToString();
+            var data = selected.Cells[1].Value.ToString();
 
             if (value.Contains(".byte"))
             {
@@ -353,6 +358,7 @@ namespace CodeDesigner
                 else if (data.EndsWith("-------"))
                     RemoveRows(index - 3, 4);
             }
+
             else if (value.Contains(".halfword"))
             {
                 if (data.StartsWith("----"))
@@ -360,28 +366,24 @@ namespace CodeDesigner
                 else if (data.EndsWith("----"))
                     RemoveRows(index - 1, 2);
             }
-            else
-            {
-                RemoveRows(index, 1);
-            }
+
+            RemoveRows(index, 1);
         }
 
         public void RemoveRows(int index, int count)
         {
             for(var i = 0; i < count; i++)
-                this.dataGridViewDisassembler.Rows.RemoveAt(index);
+                this.dgvDisassembler.Rows.RemoveAt(index);
         }
 
-        public void AddDisassembledRow(AddressType type, int x)
+        public void AddDisassembledRow(AddressType type, int address)
         {
-            for (var i = x + 3; i < x + 4; i += 4)
+            for (var i = address + 3; i < address + 4; i += 4)
             {
                 var byte1 = i - 3;
                 var byte2 = i - 2;
                 var byte3 = i - 1;
 
-                var label = Labels.FirstOrDefault(z => z.Address == byte1);
-                var comment = Comments.FirstOrDefault(z => z.Address == byte1);
                 var stringFound = Strings.FirstOrDefault(z => z.Address == byte1);
 
                 if (stringFound != null)
@@ -398,66 +400,69 @@ namespace CodeDesigner
                     StringAddress = 0;
                     StringOffset = 0;
                 }
+                
+                if (type == AddressType.Byte) {
 
-                var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
+                    if (RowType == AddRowType.Up)
+                    {
+                        AddRow(i, ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscii(MemoryDump[i])} ]");
+                        AddRow(byte3, "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscii(MemoryDump[byte3])} ]");
+                        AddRow(byte2, "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscii(MemoryDump[byte2])} ]");
+                        AddRow(byte1, "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscii(MemoryDump[byte1])} ]", true);
+                    }
+                    else
+                    {
+                        AddRow(byte1, "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscii(MemoryDump[byte1])} ]", true);
+                        AddRow(byte2, "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscii(MemoryDump[byte2])} ]");
+                        AddRow(byte3, "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscii(MemoryDump[byte3])} ]");
+                        AddRow(i, ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscii(MemoryDump[i])} ]");
+                    }
+                }
 
-                switch (type)
+                if (type == AddressType.Halfword)
                 {
-                    case AddressType.Byte:
-                        if (RowType == AddRowType.Up)
-                        {
-                            AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscii(MemoryDump[i])} ]", label, comment);
-                            AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscii(MemoryDump[byte3])} ]", label, comment);
-                            AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscii(MemoryDump[byte2])} ]", label, comment);
-                            AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscii(MemoryDump[byte1])} ]", label, comment);
-                        }
-                        else
-                        {
-                            AddRow(ToAddress(byte1), "------" + ByteToText(MemoryDump[byte1]), $".byte[ {ByteToAscii(MemoryDump[byte1])} ]", label, comment);
-                            AddRow(ToAddress(byte2), "----" + ByteToText(MemoryDump[byte2]) + "--", $".byte[ {ByteToAscii(MemoryDump[byte2])} ]", label, comment);
-                            AddRow(ToAddress(byte3), "--" + ByteToText(MemoryDump[byte3]) + "----", $".byte[ {ByteToAscii(MemoryDump[byte3])} ]", label, comment);
-                            AddRow(ToAddress(i), ByteToText(MemoryDump[i]) + "------", $".byte[ {ByteToAscii(MemoryDump[i])} ]", label, comment);
-                        }
-                        break;
+                    AddRow(byte1, "----" + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]), $".halfword", true);
+                    AddRow(byte3, ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + "----", $".halfword");
+                }
 
-                    case AddressType.Halfword:
-                        AddRow(ToAddress(byte1), "----" + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]), $".halfword", label, comment);
-                        AddRow(ToAddress(byte3), ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + "----", $".halfword", label, comment);
-                        break;
+                if (type == AddressType.Word)
+                {
+                    var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
+                    AddRow(byte1, word, ".word", true);
+                }
 
-                    case AddressType.Word:
-                        AddRow(ToAddress(byte1), word, ".word", label, comment);
-                        break;
-
-                    case AddressType.Operation:
-                        AddRow(ToAddress(byte1), word, mips.Disassemble(word), label, comment);
-                        break;
+                if (type == AddressType.Operation)
+                {
+                    var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
+                    AddRow(byte1, word, mips.Disassemble(word), true);
                 }
             }
         }
 
-        public void AddRow(string address, string data, string disassembled, Label label, Comment comment)
+        public void AddRow(int address, string data, string disassembled, bool isAligned = false)
         {
             var row = new DataGridViewRow();
-            row.CreateCells(this.dataGridViewDisassembler);
-            row.Cells[0].Value = address;
+            row.CreateCells(this.dgvDisassembler);
+            row.Cells[0].Value = ToAddress(address);
             row.Cells[1].Value = data;
             row.Cells[2].Value = disassembled;
 
-            if (label != null)
+            var label = Labels.FirstOrDefault(l => l.Address == address);
+            if (label != null && isAligned)
                 row.Cells[3].Value = label.Text;
 
-            if (comment != null)
+            var comment = Comments.FirstOrDefault(c => c.Address == address);
+            if (comment != null && isAligned)
                 row.Cells[4].Value = comment.Text;
 
             if (RowType == AddRowType.Up)
-                this.dataGridViewDisassembler.Rows.Insert(0, row);
+                this.dgvDisassembler.Rows.Insert(0, row);
 
             if(RowType == AddRowType.Insert)
-                this.dataGridViewDisassembler.Rows.Insert(dataGridViewDisassembler.SelectedRows[0].Index, row);
+                this.dgvDisassembler.Rows.Insert(dgvDisassembler.SelectedRows[0].Index, row);
 
             if (RowType == AddRowType.Down)
-                this.dataGridViewDisassembler.Rows.Add(row);
+                this.dgvDisassembler.Rows.Add(row);
         }
         
         private void tsBtnAddress_Click(object sender, EventArgs e)
@@ -475,8 +480,8 @@ namespace CodeDesigner
             {
                 GoToAddress(Convert.ToString(formStringsDump.Address, 16).PadLeft(8, '0'));
                 Strings = formStringsDump.Strings;
-            }
-            
+            }        
+
             formStringsDump.Dispose();
         }
 
@@ -497,36 +502,36 @@ namespace CodeDesigner
 
         private void tsBtnLabels_Click(object sender, EventArgs e)
         {
-            var formSearch = new FormSearch() { Collection = Labels };
-            formSearch.ShowDialog();
-            if (formSearch.Address != string.Empty)
-                GoToAddress(formSearch.Address.PadLeft(8, '0'));
+            var formLabels = new FormLabels() { Collection = Labels };
+            formLabels.ShowDialog();
+            if (formLabels.Address != string.Empty)
+                GoToAddress(formLabels.Address.PadLeft(8, '0'));
 
-            formSearch.Dispose();
+            formLabels.Dispose();
         }
 
         public void OnCellEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (this.dataGridViewDisassembler.Columns["ColumnLabel"].Index == e.ColumnIndex)
+            if (this.dgvDisassembler.Columns["ColumnLabel"].Index == e.ColumnIndex)
             {
-                if (dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != null)
+                if (dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != null)
                 {
                     Labels.Add(new Label()
                     {
-                        Address = Convert.ToInt32(dataGridViewDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
-                        Text = dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                        Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
+                        Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
                     });
                 }
             }
 
-            if (this.dataGridViewDisassembler.Columns["ColumnComment"].Index == e.ColumnIndex)
+            if (this.dgvDisassembler.Columns["ColumnComment"].Index == e.ColumnIndex)
             {
-                if (dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != null)
+                if (dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != null)
                 {
                     Comments.Add(new Comment()
                     {
-                        Address = Convert.ToInt32(dataGridViewDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
-                        Text = dataGridViewDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                        Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
+                        Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
                     });
                 }
             }
