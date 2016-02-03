@@ -16,7 +16,7 @@ namespace CodeDesigner
 
         private void runToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var type= tabControlEx1.SelectedTab.Controls[0].GetType();
+            var type = tabControlEx1.SelectedTab.Controls[0].GetType();
             if(type == typeof(AssemblerControl))
             {
                 var asm = (AssemblerControl)tabControlEx1.SelectedTab.Controls[0];

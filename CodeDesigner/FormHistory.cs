@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CodeDesigner
 {
     public partial class FormHistory : Form
     {
-        public List<string> Collection { get; set; }
         public string Address { get; set; } = string.Empty;
         public List<string> ListBoxItems { get; set; }
+        public string Path { get; set; } = @"Dump.lbl";
 
         public FormHistory()
         {
@@ -26,12 +23,6 @@ namespace CodeDesigner
 
         private void FormSearch_Load(object sender, EventArgs e)
         {
-            ListBoxItems = new List<string>(); 
-            foreach (var item in Collection)
-            {
-                ListBoxItems.Add(Convert.ToString(item));
-            }
-
             listBox1.Items.AddRange(ListBoxItems.ToArray());
             listBox1.Update();
         }
@@ -50,7 +41,9 @@ namespace CodeDesigner
                 listBox1.Items.AddRange(ListBoxItems.Where(x => x.Contains(textBox1.Text)).ToArray());
             }
             else
+            {
                 listBox1.Items.AddRange(ListBoxItems.ToArray());
+            }
         }
     }
 }

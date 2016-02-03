@@ -20,8 +20,10 @@ namespace CodeDesigner
         public AddRowType RowType { get; set; } = AddRowType.Down;
         public Mips32 mips { get; set; }
         public List<Label> Labels { get; set; } = new List<Label>();
+        public string LabelsPath { get; set; }
         public List<Comment> Comments { get; set; } = new List<Comment>();
         public List<string> History { get; set; } = new List<string>();
+        public string HistoryPath { get; set; } 
         public List<StringMatch> Strings { get; set; } = new List<StringMatch>();
         public int StringAddress { get; set; }
         public int StringOffset { get; set; }
@@ -59,8 +61,8 @@ namespace CodeDesigner
 
         public DisassemblerControl()
         {
-            PageEnd = PageSize;
             InitializeComponent();
+            PageEnd = PageSize;
             dgvDisassembler.KeyDown += new KeyEventHandler(OnKeyPressedDown);
             dgvDisassembler.CellPainting += new DataGridViewCellPaintingEventHandler(OnCellPainting);
             dgvDisassembler.SelectionChanged += new EventHandler(OnSelected);
@@ -76,7 +78,12 @@ namespace CodeDesigner
                 if (File.Exists(MemoryDumpPath))
                 {
                     MemoryDump = File.ReadAllBytes(MemoryDumpPath);
-                    LoadLabelsFromFile(Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".txt");
+
+                    LabelsPath = Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".txt";
+                    LoadLabels();
+
+                    HistoryPath = Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".cdh";
+                    History = LoadHistory();
                 }
             }
             else
@@ -168,6 +175,7 @@ namespace CodeDesigner
                 PageEnd = addressInt + PageSize;
                 Start();
                 dgvDisassembler.Rows[0].Selected = true;
+                SaveHistory();
             }
         }
 
@@ -307,37 +315,55 @@ namespace CodeDesigner
             }
         }
 
-        public void LoadLabelsFromFile(string path)
+        public void LoadLabels()
         {
-            var text = string.Empty;
-            try
-            {
-                text = File.ReadAllText(path);
-            }
-            catch
-            {
-                text = "";
-            }
 
-            MatchCollection matches = Regex.Matches(text.Replace("\r", ""), @"(\b[A-Z0-9\.\-\*\(\)\[\]\\\/\=\,\&\?\~ \. \%\^]{3,})[\n ]{0,}([a-f0-9]{8}[ ]{1}[a-fA0-9]{8}[ ]{0,}[\n]{0,1}){1,}[ ]{0,}[\n]{0,1}", RegexOptions.IgnoreCase);
-            foreach (Match item in matches)
+            if (File.Exists(LabelsPath))
             {
-                var x = 0;
-                foreach (string stringItem in item.Groups[0].Value.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                var text = File.ReadAllText(LabelsPath);
+                MatchCollection matches = Regex.Matches(text.Replace("\r", ""), @"(\b[A-Z0-9\.\-\*\(\)\[\]\\\/\=\,\&\?\~ \. \%\^]{3,})[\n ]{0,}([a-f0-9]{8}[ ]{1}[a-fA0-9]{8}[ ]{0,}[\n]{0,1}){1,}[ ]{0,}[\n]{0,1}", RegexOptions.IgnoreCase);
+                foreach (Match item in matches)
                 {
-                    if (Regex.IsMatch(stringItem, Theme.WordPattern))
+                    var x = 0;
+                    foreach (string stringItem in item.Groups[0].Value.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        var value = x == 0 ? string.Empty : "_" + x.ToString();
-                        Labels.Add(new Label()
+                        if (Regex.IsMatch(stringItem, Theme.WordPattern))
                         {
-                            Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
-                            Text = $" {item.Groups[1].Value.Trim()}{value}"
-                        });
+                            Labels.Add(new Label()
+                            {
+                                Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
+                                Text = $"_{item.Groups[1].Value.Trim()}"
+                            });
+                        }
+                        x++;
                     }
-                    x++;
                 }
             }
+            else
+            {
+                File.WriteAllText(LabelsPath, string.Empty);
+            }
+        }
 
+        public void SaveLabels()
+        {
+            if (Labels.Count() > 0)
+            {
+                var result = "";
+                var labelTexts = Labels.Select(x => Parse.WithRegex(x.Text, @"_(.{3,})").Trim()).Distinct();
+
+                foreach (var text in labelTexts)
+                {
+                    result += $"{text}\r\n";
+                    foreach (var label in Labels.Where(x => Parse.WithRegex(x.Text, @"_(.{3,})").Trim() == text))
+                    {
+                        var data = ByteToText(MemoryDump[label.Address + 3]) + ByteToText(MemoryDump[label.Address + 2]) + ByteToText(MemoryDump[label.Address + 1]) + ByteToText(MemoryDump[label.Address]);
+                        result += $"2{ToAddress(label.Address).Substring(1,7)} {data}\r\n";
+                    }
+                    result += "\r\n";
+                }
+                File.WriteAllText(LabelsPath, result);
+            }
         }
 
         public void RemoveDisassembledRow()
@@ -492,11 +518,12 @@ namespace CodeDesigner
 
         private void tsBtnHistory_Click(object sender, EventArgs e)
         {
-            var formHistory = new FormHistory() { Collection = History };
+            var formHistory = new FormHistory() { ListBoxItems = History };
             formHistory.ShowDialog();
             if (formHistory.Address != string.Empty)
                 GoToAddress(formHistory.Address.PadLeft(8, '0'));
 
+            History = formHistory.ListBoxItems;
             formHistory.Dispose();
         }
 
@@ -514,19 +541,20 @@ namespace CodeDesigner
         {
             if (this.dgvDisassembler.Columns["ColumnLabel"].Index == e.ColumnIndex)
             {
-                if (dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != null)
+                if (dgvDisassembler.Rows[e.RowIndex].Cells[3] != null)
                 {
                     Labels.Add(new Label()
                     {
                         Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
-                        Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                        Text = "_"+ dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
                     });
+                    SaveLabels();
                 }
             }
 
             if (this.dgvDisassembler.Columns["ColumnComment"].Index == e.ColumnIndex)
             {
-                if (dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString() != null)
+                if (dgvDisassembler.Rows[e.RowIndex].Cells[3] != null)
                 {
                     Comments.Add(new Comment()
                     {
@@ -536,6 +564,24 @@ namespace CodeDesigner
                 }
             }
         }
+
+        public void SaveHistory()
+        {
+            if (History.Count() > 0)
+                File.WriteAllText(HistoryPath, String.Join("\r\n", History.ToArray()));
+        }
+
+        public List<string> LoadHistory()
+        {
+            if (File.Exists(HistoryPath))
+                return File.ReadAllText(HistoryPath).Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            else
+            {
+                File.WriteAllText(HistoryPath, string.Empty);
+                return new List<string>();
+            }
+        }
+
 
     }
 }
