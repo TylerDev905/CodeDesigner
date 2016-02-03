@@ -15,7 +15,7 @@ namespace CodeDesigner
         public byte[] MemoryDump { get; set; }
         public int MemoryDumpSize { get; set; } = 33554432;
         public int PageStart { get; set; } = 0;
-        public int PageSize { get; set; } = 176;
+        public int PageSize { get; set; } = 160;
         public int PageEnd { get; set; }
         public AddRowType RowType { get; set; } = AddRowType.Down;
         public Mips32 mips { get; set; }
@@ -90,7 +90,7 @@ namespace CodeDesigner
             RowType = AddRowType.Down;
 
             var memoryIndex = PageStart;
-            while (memoryIndex < PageStart + PageEnd)
+            while (memoryIndex < PageEnd)
             {
                 AddDisassembledRow(AddressType.Operation, memoryIndex);
                 memoryIndex += 4;
