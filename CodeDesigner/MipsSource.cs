@@ -26,9 +26,9 @@ namespace CodeDesigner
 
         public static string LabelPattern = @"([_.\[\]a-z0-9]{3,}):";
         public static string TargetPattern = @":([_.\[\]a-z0-9]{3,})";
-        public static string WordPattern = "([a-f0-9]{8})";
-        public static string HalfWordPattern = "([a-f0-9]{4})";
-        public static string BytePatternPattern = "([a-f0-9]{2})";
+        public static string WordPattern = "([A-Fa-f0-9]{8})";
+        public static string HalfWordPattern = "([A-Fa-f0-9]{4})";
+        public static string BytePatternPattern = "([A-Fa-f0-9]{2})";
         public static string RegisterPattern = @"([a-z0-9]{2,})";
         public static string BetweenCurleyBraces = @"\((.{1,})\)";
         public static string BetweenQuotes = "\"(.{1,})\"";
@@ -48,12 +48,12 @@ namespace CodeDesigner
             Source = source;
         }
 
-        public string Parse()
+        public string Parse(List<Label> labels)
         {
             ILineCollection = new List<ILine>();
             LineNumber = 0;
             LineCount = 0;
-            Labels = new List<Label>();
+            Labels = new List<Label>(labels);
             AssembledCode = string.Empty;
             Address = 0;
             Logs = new List<Error>();
@@ -407,15 +407,15 @@ namespace CodeDesigner
                 {
                     if (isLabelAssemble)
                     {
-                        try
-                        {
-                            var parsed = Regex.Match(item, TargetPattern);
-                            hex = Convert.ToString(Labels.Single(x => x.Text == parsed.Groups[1].Value).Address, 16);
-                        }
-                        catch
-                        {
-                            AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type label is not defined");
-                        }
+                        //try
+                        //{
+                            var parsed = Regex.Match(item, TargetPattern, RegexOptions.IgnoreCase);
+                            hex = Convert.ToString(Labels.SingleOrDefault(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8,'0');
+                        //}
+                        //catch
+                        //{
+                            //AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type label is not defined");
+                        //}
                     }
                     hasLabel = true;
                 }

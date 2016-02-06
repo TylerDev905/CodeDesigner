@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -21,13 +22,24 @@ namespace CodeDesigner
             {
                 var assembler = (AssemblerControl)tabControlEx1.SelectedTab.Controls[0];
                 assembler.Save();
-                assembler.Run();
+                assembler.Run(GetAllLabels());
             }
         }
 
-        private void assemblerControl1_Load(object sender, EventArgs e)
+        private List<Label> GetAllLabels()
         {
-            
+            var type = tabControlEx1.SelectedTab.Controls[0].GetType();
+            var labels = new List<Label>();
+
+            foreach (TabPage control in tabControlEx1.Controls)
+            {     
+                if (control.Controls[0].GetType() == typeof(DisassemblerControl) && type == typeof(AssemblerControl))
+                {
+                    var temp = (DisassemblerControl)control.Controls[0];
+                    labels.AddRange(temp.Labels);
+                }
+            }
+            return labels;
         }
 
         private void tsmOpen_Click(object sender, EventArgs e)

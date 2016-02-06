@@ -333,11 +333,14 @@ namespace CodeDesigner
                     {
                         if (Regex.IsMatch(stringItem, Theme.WordPattern))
                         {
-                            Labels.Add(new Label()
+                            if (Labels.Where(y => y.Text == $"_{item.Groups[1].Value.Trim().Replace(" ", "_")}[{x}]").Count() == 0)
                             {
-                                Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
-                                Text = $"_{item.Groups[1].Value.Trim().Replace(" ", "_")}[{x}]"
-                            });
+                                Labels.Add(new Label()
+                                {
+                                    Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
+                                    Text = $"_{item.Groups[1].Value.Trim().Replace(" ", "_")}[{x}]"
+                                });
+                            }
                         }
                         x++;
                     }
@@ -358,13 +361,17 @@ namespace CodeDesigner
 
                 foreach (var text in labelTexts)
                 {
-                    result += $"{text}\r\n";
-                    foreach (var label in Labels.Where(x => Parse.WithRegex(x.Text, @"_(.{3,})").Trim() == text))
+                    try
                     {
-                        var data = ByteToText(MemoryDump[label.Address + 3]) + ByteToText(MemoryDump[label.Address + 2]) + ByteToText(MemoryDump[label.Address + 1]) + ByteToText(MemoryDump[label.Address]);
-                        result += $"2{ToAddress(label.Address).Substring(1,7)} {data}\r\n";
+                        result += $"{text}\r\n";
+                        foreach (var label in Labels.Where(x => Parse.WithRegex(x.Text, @"_(.{3,})").Trim() == text))
+                        {
+                            var data = ByteToText(MemoryDump[label.Address + 3]) + ByteToText(MemoryDump[label.Address + 2]) + ByteToText(MemoryDump[label.Address + 1]) + ByteToText(MemoryDump[label.Address]);
+                            result += $"2{ToAddress(label.Address).Substring(1, 7)} {data}\r\n";
+                        }
+                        result += "\r\n";
                     }
-                    result += "\r\n";
+                    catch { }
                 }
                 File.WriteAllText(LabelsPath, result);
             }

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
+using System.Collections.Generic;
 
 namespace CodeDesigner
 {
@@ -83,10 +84,10 @@ namespace CodeDesigner
             System.IO.File.WriteAllText(SourcePath, fstSource.Text);
         }
 
-        public void Run()
+        public void Run(List<Label> labels)
         {
             SourceMips.Source = fstSource.Text;
-            rtCode.Text = SourceMips.Parse();
+            rtCode.Text = SourceMips.Parse(labels);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
