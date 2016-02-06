@@ -37,8 +37,8 @@ namespace CodeDesigner
         public static Style RegisterStyle6 { get; set; } = new TextStyle(RegisterBrush6, null, Font);
         public static Style ExceptionStyle { get; set; } = new TextStyle(ExceptionBrush, null, Font);
         
-        public static string LabelPattern = @"([_.a-z0-9]{3,15}):";
-        public static string TargetPattern = @":([_.a-z0-9]{3,15})";
+        public static string LabelPattern = @"([_.\[\]a-z0-9]{3,}):";
+        public static string TargetPattern = @":([_.\[\]a-z0-9]{3,})";
 
         public static string WordPattern = "([a-f0-9]{8})";
         public static string HalfWordPattern = @"([a-f0-9]{4})";

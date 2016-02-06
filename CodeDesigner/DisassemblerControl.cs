@@ -104,6 +104,11 @@ namespace CodeDesigner
             }
         }
 
+        public void Save()
+        {
+            File.WriteAllBytes(MemoryDumpPath, MemoryDump);
+        }
+
         public void UpdateStringView()
         {
             if (dgvDisassembler.SelectedRows.Count > 0)
@@ -317,7 +322,6 @@ namespace CodeDesigner
 
         public void LoadLabels()
         {
-
             if (File.Exists(LabelsPath))
             {
                 var text = File.ReadAllText(LabelsPath);
@@ -332,7 +336,7 @@ namespace CodeDesigner
                             Labels.Add(new Label()
                             {
                                 Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
-                                Text = $"_{item.Groups[1].Value.Trim()}"
+                                Text = $"_{item.Groups[1].Value.Trim().Replace(" ", "_")}[{x}]"
                             });
                         }
                         x++;
@@ -546,7 +550,7 @@ namespace CodeDesigner
                     Labels.Add(new Label()
                     {
                         Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
-                        Text = "_"+ dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                        Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
                     });
                     SaveLabels();
                 }

@@ -77,6 +77,11 @@ namespace CodeDesigner
 
         }
 
+        public void Save()
+        {
+            System.IO.File.WriteAllText(SourcePath, fstSource.Text);
+        }
+
         public void Run()
         {
             SourceMips.Source = fstSource.Text;

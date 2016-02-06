@@ -31,7 +31,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.binToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,8 +48,10 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.disassemblerControl1 = new CodeDesigner.DisassemblerControl();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1.SuspendLayout();
             this.tabControlEx1.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -70,17 +77,57 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmOpen});
+            this.newToolStripMenuItem,
+            this.tsmOpen,
+            this.saveToolStripMenuItem,
+            this.saveAsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(52, 22);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sourceToolStripMenuItem,
+            this.binToolStripMenuItem});
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.newToolStripMenuItem.Text = "New";
+            // 
+            // sourceToolStripMenuItem
+            // 
+            this.sourceToolStripMenuItem.Name = "sourceToolStripMenuItem";
+            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.sourceToolStripMenuItem.Text = "Source";
+            this.sourceToolStripMenuItem.Click += new System.EventHandler(this.sourceToolStripMenuItem_Click);
+            // 
+            // binToolStripMenuItem
+            // 
+            this.binToolStripMenuItem.Name = "binToolStripMenuItem";
+            this.binToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.binToolStripMenuItem.Text = "Bin";
+            this.binToolStripMenuItem.Click += new System.EventHandler(this.binToolStripMenuItem_Click);
+            // 
             // tsmOpen
             // 
             this.tsmOpen.Name = "tsmOpen";
-            this.tsmOpen.Size = new System.Drawing.Size(108, 22);
+            this.tsmOpen.Size = new System.Drawing.Size(132, 22);
             this.tsmOpen.Text = "Open";
             this.tsmOpen.Click += new System.EventHandler(this.tsmOpen_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // runToolStripMenuItem
             // 
@@ -175,6 +222,8 @@
             this.disassemblerControl1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.disassemblerControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.disassemblerControl1.History = ((System.Collections.Generic.List<string>)(resources.GetObject("disassemblerControl1.History")));
+            this.disassemblerControl1.HistoryPath = null;
+            this.disassemblerControl1.LabelsPath = null;
             this.disassemblerControl1.Location = new System.Drawing.Point(3, 3);
             this.disassemblerControl1.MemoryDump = null;
             this.disassemblerControl1.MemoryDumpPath = "C:\\Users\\Tyler\\Desktop\\pcsx2  fragment\\dump.bin";
@@ -182,16 +231,13 @@
             this.disassemblerControl1.mips = null;
             this.disassemblerControl1.Name = "disassemblerControl1";
             this.disassemblerControl1.PageEnd = 2000;
+            this.disassemblerControl1.PageSize = 160;
             this.disassemblerControl1.PageStart = 0;
             this.disassemblerControl1.RowType = CodeDesigner.DisassemblerControl.AddRowType.Up;
             this.disassemblerControl1.Size = new System.Drawing.Size(891, 489);
             this.disassemblerControl1.StringAddress = 0;
             this.disassemblerControl1.StringOffset = 0;
             this.disassemblerControl1.TabIndex = 0;
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.FileName = "openFileDialog";
             // 
             // tabPage3
             // 
@@ -202,6 +248,10 @@
             this.tabPage3.TabIndex = 0;
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "openFileDialog";
             // 
             // FormMain
             // 
@@ -238,10 +288,17 @@
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsmOpen;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.WebBrowser webBrowser1;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sourceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem binToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 

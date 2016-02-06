@@ -24,8 +24,8 @@ namespace CodeDesigner
         public Mips32 Mips { get; set; } = new Mips32();
         public static List<string> MipsArgTypes = new List<string> { "Branch", "Code", "Register", "Integer", "Immediate", "Call" };
 
-        public static string LabelPattern = @"([_.a-z0-9]{3,15}):";
-        public static string TargetPattern = @":([_.a-z0-9]{3,15})";
+        public static string LabelPattern = @"([_.\[\]a-z0-9]{3,}):";
+        public static string TargetPattern = @":([_.\[\]a-z0-9]{3,})";
         public static string WordPattern = "([a-f0-9]{8})";
         public static string HalfWordPattern = "([a-f0-9]{4})";
         public static string BytePatternPattern = "([a-f0-9]{2})";
@@ -314,7 +314,7 @@ namespace CodeDesigner
                 {
                     try
                     {
-                        var parsed = Regex.Match(item, TargetPattern);
+                        var parsed = Regex.Match(item, TargetPattern, RegexOptions.IgnoreCase);
                         var label = Labels.Single(x => x.Text == parsed.Groups[1].Value);
                         var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(item.ToUpper())));
                         var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
