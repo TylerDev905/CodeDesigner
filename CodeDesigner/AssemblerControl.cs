@@ -28,6 +28,7 @@ namespace CodeDesigner
             {
                 fstSource.Text = Source;
             }
+            fstSource.AppendText(" ");
         }
         
         private void fstConsole_TextChanged(object sender, TextChangedEventArgs e)
@@ -38,6 +39,14 @@ namespace CodeDesigner
 
         private void fastColoredTextBox1_TextChanged(object sender, TextChangedEventArgs e)
         {
+            Range range = (sender as FastColoredTextBox).VisibleRange;
+            
+            range.ClearStyle(Theme.CommentStyle);
+            range.SetStyle(Theme.CommentStyle, @"//.*$", RegexOptions.Multiline);
+            range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(/\*.*)", RegexOptions.Singleline);
+            range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(.*\*/)", RegexOptions.Singleline |
+                        RegexOptions.RightToLeft);
+
             e.ChangedRange.ClearStyle(Theme.LabelStyle);
             e.ChangedRange.SetStyle(Theme.LabelStyle, Theme.LabelPattern, RegexOptions.IgnoreCase);
             e.ChangedRange.SetStyle(Theme.LabelStyle, Theme.TargetPattern, RegexOptions.IgnoreCase);
@@ -66,15 +75,7 @@ namespace CodeDesigner
 
             e.ChangedRange.ClearStyle(Theme.RegisterStyle6);
             e.ChangedRange.SetStyle(Theme.RegisterStyle6, Theme.RegisterPattern6, RegexOptions.IgnoreCase);
-
-            Range range = (sender as FastColoredTextBox).VisibleRange;
-
-            range.ClearStyle(Theme.CommentStyle);
-            range.SetStyle(Theme.CommentStyle, @"//.*$", RegexOptions.Multiline);
-            range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(/\*.*)", RegexOptions.Singleline);
-            range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(.*\*/)", RegexOptions.Singleline |
-                        RegexOptions.RightToLeft);
-
+            
         }
 
         public void Save()

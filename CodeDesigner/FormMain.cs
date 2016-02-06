@@ -17,8 +17,12 @@ namespace CodeDesigner
         private void runToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var type = tabControlEx1.SelectedTab.Controls[0].GetType();
-            if(type == typeof(AssemblerControl))
-                ((AssemblerControl)tabControlEx1.SelectedTab.Controls[0]).Run();
+            if (type == typeof(AssemblerControl))
+            {
+                var assembler = (AssemblerControl)tabControlEx1.SelectedTab.Controls[0];
+                assembler.Save();
+                assembler.Run();
+            }
         }
 
         private void assemblerControl1_Load(object sender, EventArgs e)
