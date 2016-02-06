@@ -66,6 +66,10 @@ namespace CodeDesigner
                         tabControlEx1.Controls.Add(tab);
                         tabControlEx1.SelectedTab = tab;
                         break;
+
+                        default:
+                            MessageBox.Show("Incorrect file format.");
+                        break;
                 }
             } 
         }
