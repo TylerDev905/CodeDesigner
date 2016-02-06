@@ -407,15 +407,15 @@ namespace CodeDesigner
                 {
                     if (isLabelAssemble)
                     {
-                        //try
-                        //{
+                        try
+                        {
                             var parsed = Regex.Match(item, TargetPattern, RegexOptions.IgnoreCase);
-                            hex = Convert.ToString(Labels.SingleOrDefault(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8,'0');
-                        //}
-                        //catch
-                        //{
-                            //AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type label is not defined");
-                        //}
+                            hex = Convert.ToString(Labels.LastOrDefault(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8,'0');
+                        }
+                        catch
+                        {
+                            AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type label is not defined");
+                       }
                     }
                     hasLabel = true;
                 }

@@ -136,26 +136,31 @@ namespace CodeDesigner
                 case Keys.Right:
                     JumpToAddres();
                     break;
+
                 case Keys.F9:
                     RowType = AddRowType.Insert;
                     RemoveDisassembledRow();
                     AddDisassembledRow(AddressType.Word, address);
                     break;
+
                 case Keys.F10:
                     RowType = AddRowType.Insert;
                     RemoveDisassembledRow();
                     AddDisassembledRow(AddressType.Halfword, address);
                     break;
+
                 case Keys.F11:
                     RowType = AddRowType.Insert;
                     RemoveDisassembledRow();
                     AddDisassembledRow(AddressType.Operation, address);
                     break;
+
                 case Keys.F12:
                     RowType = AddRowType.Insert;
                     RemoveDisassembledRow();
                     AddDisassembledRow(AddressType.Byte, address);
                     break;
+
             }
         }
 
@@ -357,14 +362,14 @@ namespace CodeDesigner
             if (Labels.Count() > 0)
             {
                 var result = "";
-                var labelTexts = Labels.Select(x => Parse.WithRegex(x.Text, @"_(.{3,})").Trim()).Distinct();
+                var labelTexts = Labels.Select(x => Parse.WithRegex(x.Text, @"_(.{3,})\[[0-9]").Trim()).Distinct();
 
                 foreach (var text in labelTexts)
                 {
                     try
                     {
-                        result += $"{text}\r\n";
-                        foreach (var label in Labels.Where(x => Parse.WithRegex(x.Text, @"_(.{3,})").Trim() == text))
+                        result += $"{text.Replace("_", " ")}\r\n";
+                        foreach (var label in Labels.Where(x => Parse.WithRegex(x.Text, @"_(.{3,})\[[0-8]").Trim() == text))
                         {
                             var data = ByteToText(MemoryDump[label.Address + 3]) + ByteToText(MemoryDump[label.Address + 2]) + ByteToText(MemoryDump[label.Address + 1]) + ByteToText(MemoryDump[label.Address]);
                             result += $"2{ToAddress(label.Address).Substring(1, 7)} {data}\r\n";
