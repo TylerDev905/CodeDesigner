@@ -410,7 +410,7 @@ namespace CodeDesigner
                         try
                         {
                             var parsed = Regex.Match(item, TargetPattern, RegexOptions.IgnoreCase);
-                            hex = Convert.ToString(Labels.LastOrDefault(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8,'0');
+                            hex = Convert.ToString(Labels.FirstOrDefault(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8,'0');
                         }
                         catch
                         {

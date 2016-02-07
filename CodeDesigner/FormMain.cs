@@ -83,8 +83,20 @@ namespace CodeDesigner
                         tabControlEx1.SelectedTab = tab;
                         break;
 
-                        default:
-                            MessageBox.Show("Incorrect file format.");
+                    case ".bms":
+                        var bms = new BMSEditorControl()
+                        {
+                            SourcePath = openFileDialog.FileName,
+                            Dock = DockStyle.Fill
+                        };
+                        bms.LoadSource();
+                        tab.Controls.Add(bms);
+                        tabControlEx1.Controls.Add(tab);
+                        tabControlEx1.SelectedTab = tab;
+                        break;
+
+                    default:
+                        MessageBox.Show("Incorrect file format.");
                         break;
                 }
             } 
@@ -172,7 +184,12 @@ namespace CodeDesigner
             tabControlEx1.SelectedTab = tab;
         }
 
- 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var about = new FormAbout();
+            about.ShowDialog();
+            about.Dispose();
+        }
     }
 }
 
