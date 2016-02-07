@@ -71,10 +71,11 @@ namespace CodeDesigner
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            fstConsole.Text = "Please select an archive to continue.\n";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 ArchivePath = openFileDialog1.FileName;
-
+                fstConsole.Text += "Please select the output path to contine.\n";
                 if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
                 {
                     OutputPath = folderBrowserDialog1.SelectedPath;
@@ -85,7 +86,7 @@ namespace CodeDesigner
                     cmd.StartInfo.CreateNoWindow = false;
                     cmd.Start();
 
-                    fstConsole.Text = "The archive was successfully exported.";
+                    fstConsole.Text += $"The archive {System.IO.Path.GetFileName(ArchivePath)} was unpacked and the contents have been exported to {OutputPath}\n";
                     Console.WriteLine();
                 }
             }
@@ -93,24 +94,24 @@ namespace CodeDesigner
 
         private void tsBtnHistory_Click(object sender, EventArgs e)
         {
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            fstConsole.Text = "Please select an archive to continue.\n";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                ArchivePath = saveFileDialog1.FileName;
+                ArchivePath = openFileDialog1.FileName;
+                fstConsole.Text += "Please select the Input path to contine.\n";
                 if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
                 {
                     OutputPath = folderBrowserDialog1.SelectedPath;
                     var cmd = new Process();
                     cmd.StartInfo.FileName = @"quickbms.exe";
-                    cmd.StartInfo.Arguments = $"-r {SourcePath} {ArchivePath} \"{OutputPath}\"";
-                    //cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    //cmd.StartInfo.CreateNoWindow = false;
+                    cmd.StartInfo.Arguments = $"-w -r {SourcePath} {ArchivePath} \"{OutputPath}\"";
+                    cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    cmd.StartInfo.CreateNoWindow = false;
                     cmd.Start();
 
-                    fstConsole.Text = "The archive was successfully created.";
-                    Console.WriteLine();
+                    fstConsole.Text += $"The archive {System.IO.Path.GetFileName(OutputPath)} has been packed and the contents have been imported into {ArchivePath}\n";
                 }
             }
-
         }
     }
 }

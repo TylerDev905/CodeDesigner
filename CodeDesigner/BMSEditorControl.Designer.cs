@@ -153,7 +153,7 @@
         '\"',
         '\'',
         '\''};
-            this.fstConsole.AutoScrollMinSize = new System.Drawing.Size(29, 18);
+            this.fstConsole.AutoScrollMinSize = new System.Drawing.Size(0, 18);
             this.fstConsole.BackBrush = null;
             this.fstConsole.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.fstConsole.CharHeight = 18;
@@ -173,6 +173,7 @@
             this.fstConsole.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fstConsole.ServiceColors")));
             this.fstConsole.Size = new System.Drawing.Size(827, 95);
             this.fstConsole.TabIndex = 6;
+            this.fstConsole.WordWrap = true;
             this.fstConsole.Zoom = 100;
             // 
             // openFileDialog1
