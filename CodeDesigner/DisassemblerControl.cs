@@ -435,9 +435,14 @@ namespace CodeDesigner
                 {
                     stringFound = Strings.FirstOrDefault(z => z.Address > byte1 - threshold);
                 }
-                else
+
+                else if(RowType == AddRowType.Down)
                 {
                     stringFound = Strings.FirstOrDefault(z => z.Address < byte1 + threshold);
+                }
+                else
+                {
+                    StringAddress = 0;
                 }
                                 
                 if (stringFound != null)
