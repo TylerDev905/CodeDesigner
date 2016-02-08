@@ -79,10 +79,12 @@ namespace CodeDesigner
                 {
                     MemoryDump = File.ReadAllBytes(MemoryDumpPath);
 
-                    LabelsPath = Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".txt";
+                    var path = MemoryDumpPath.Replace(Path.GetFileName(MemoryDumpPath), "");
+
+                    LabelsPath = path + Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".txt";
                     LoadLabels();
 
-                    HistoryPath = Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".cdh";
+                    HistoryPath = path + Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".cdh";
                     History = LoadHistory();
                 }
             }

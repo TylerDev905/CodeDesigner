@@ -32,13 +32,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BMSEditorControl));
             this.fstSource = new FastColoredTextBoxNS.FastColoredTextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.tsBtnHistory = new System.Windows.Forms.ToolStripButton();
+            this.tsBtnExport = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.fstConsole = new FastColoredTextBoxNS.FastColoredTextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.fstSource)).BeginInit();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -91,35 +91,26 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.tsBtnHistory});
+            this.tsBtnExport,
+            this.toolStripButton1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
+            this.toolStrip1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.toolStrip1.Size = new System.Drawing.Size(827, 36);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripButton1
+            // tsBtnExport
             // 
-            this.toolStripButton1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
-            this.toolStripButton1.Size = new System.Drawing.Size(83, 33);
-            this.toolStripButton1.Text = "Export";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // tsBtnHistory
-            // 
-            this.tsBtnHistory.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tsBtnHistory.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnHistory.Image")));
-            this.tsBtnHistory.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsBtnHistory.Name = "tsBtnHistory";
-            this.tsBtnHistory.Size = new System.Drawing.Size(83, 33);
-            this.tsBtnHistory.Text = "Import";
-            this.tsBtnHistory.Click += new System.EventHandler(this.tsBtnHistory_Click);
+            this.tsBtnExport.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsBtnExport.Image = ((System.Drawing.Image)(resources.GetObject("tsBtnExport.Image")));
+            this.tsBtnExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsBtnExport.Name = "tsBtnExport";
+            this.tsBtnExport.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.tsBtnExport.Size = new System.Drawing.Size(83, 33);
+            this.tsBtnExport.Text = "Export";
+            this.tsBtnExport.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // splitContainer1
             // 
@@ -137,7 +128,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.fstConsole);
             this.splitContainer1.Size = new System.Drawing.Size(827, 480);
             this.splitContainer1.SplitterDistance = 369;
-            this.splitContainer1.SplitterWidth = 16;
+            this.splitContainer1.SplitterWidth = 12;
             this.splitContainer1.TabIndex = 10;
             // 
             // fstConsole
@@ -171,7 +162,7 @@
             this.fstConsole.Paddings = new System.Windows.Forms.Padding(0);
             this.fstConsole.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.fstConsole.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fstConsole.ServiceColors")));
-            this.fstConsole.Size = new System.Drawing.Size(827, 95);
+            this.fstConsole.Size = new System.Drawing.Size(827, 99);
             this.fstConsole.TabIndex = 6;
             this.fstConsole.WordWrap = true;
             this.fstConsole.Zoom = 100;
@@ -179,6 +170,15 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(83, 33);
+            this.toolStripButton1.Text = "Import";
             // 
             // BMSEditorControl
             // 
@@ -207,10 +207,10 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private FastColoredTextBoxNS.FastColoredTextBox fstConsole;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.ToolStripButton tsBtnHistory;
+        private System.Windows.Forms.ToolStripButton tsBtnExport;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }

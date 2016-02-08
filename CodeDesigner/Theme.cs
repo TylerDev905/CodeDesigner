@@ -45,11 +45,18 @@ namespace CodeDesigner
         public static string RegisterPattern4 = "t0|t1|t2|t3|t4|t5|t6|t7|t8|t9";
         public static string RegisterPattern5 = "k0|k1|at";
         public static string RegisterPattern6 = "gp|fp|zero";
-
+  
         public static string BytePatternPattern = "([a-f0-9]{2})";
         public static string RegisterPattern = @"([a-z0-9]{2,})";
         public static string CurleyBracesPattern = @"\((.{1,})\)";
         public static string QuotesPattern = "\"(.{1,})\"";
         public static string ExceptionPattern = "Line [0-9]{1,}: Exception thrown - [a-z0-9 ,!.]{1,}";
+
+        public static string BMSTypes = "long|double|integer|float|string|char";
+        public static string BMSStatements = "goto|for|if|else|else if|while|end";
+        public static string BMSSpecial2 = "get|set|offset";
+        public static string BMSSpecial1 = "math";
+        public static string BMSHex = "0x[0-9a-f]{1,}";
+
     }
 }

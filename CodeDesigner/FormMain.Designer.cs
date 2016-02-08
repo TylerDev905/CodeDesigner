@@ -33,7 +33,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.binToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -42,10 +42,15 @@
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.projectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.codeOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.readMeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControlEx1 = new CodeDesigner.TabControlEx();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
@@ -56,10 +61,21 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tabControlEx2 = new CodeDesigner.TabControlEx();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.projectTree1 = new CodeDesigner.ProjectTree();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.tabControlEx1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.tabControlEx2.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -96,7 +112,7 @@
             // 
             this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sourceToolStripMenuItem,
-            this.binToolStripMenuItem});
+            this.projectToolStripMenuItem});
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newToolStripMenuItem.Text = "New";
@@ -108,12 +124,12 @@
             this.sourceToolStripMenuItem.Text = "Source";
             this.sourceToolStripMenuItem.Click += new System.EventHandler(this.sourceToolStripMenuItem_Click);
             // 
-            // binToolStripMenuItem
+            // projectToolStripMenuItem
             // 
-            this.binToolStripMenuItem.Name = "binToolStripMenuItem";
-            this.binToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.binToolStripMenuItem.Text = "Bin";
-            this.binToolStripMenuItem.Click += new System.EventHandler(this.binToolStripMenuItem_Click);
+            this.projectToolStripMenuItem.Name = "projectToolStripMenuItem";
+            this.projectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.projectToolStripMenuItem.Text = "Project";
+            this.projectToolStripMenuItem.Click += new System.EventHandler(this.projectToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -162,9 +178,37 @@
             // 
             // viewToolStripMenuItem
             // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.projectsToolStripMenuItem,
+            this.consoleToolStripMenuItem,
+            this.codeOutputToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(52, 22);
             this.viewToolStripMenuItem.Text = "View";
+            // 
+            // projectsToolStripMenuItem
+            // 
+            this.projectsToolStripMenuItem.Checked = true;
+            this.projectsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.projectsToolStripMenuItem.Name = "projectsToolStripMenuItem";
+            this.projectsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.projectsToolStripMenuItem.Text = "Projects";
+            // 
+            // consoleToolStripMenuItem
+            // 
+            this.consoleToolStripMenuItem.Checked = true;
+            this.consoleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.consoleToolStripMenuItem.Name = "consoleToolStripMenuItem";
+            this.consoleToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.consoleToolStripMenuItem.Text = "Console";
+            // 
+            // codeOutputToolStripMenuItem
+            // 
+            this.codeOutputToolStripMenuItem.Checked = true;
+            this.codeOutputToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.codeOutputToolStripMenuItem.Name = "codeOutputToolStripMenuItem";
+            this.codeOutputToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.codeOutputToolStripMenuItem.Text = "Code Output";
             // 
             // settingsToolStripMenuItem
             // 
@@ -175,7 +219,8 @@
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
+            this.aboutToolStripMenuItem,
+            this.readMeToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(52, 22);
             this.helpToolStripMenuItem.Text = "Help";
@@ -183,17 +228,33 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // readMeToolStripMenuItem
+            // 
+            this.readMeToolStripMenuItem.Name = "readMeToolStripMenuItem";
+            this.readMeToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.readMeToolStripMenuItem.Text = "Read Me";
+            // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 565);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel2});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 467);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(905, 22);
             this.statusStrip1.TabIndex = 8;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Padding = new System.Windows.Forms.Padding(0, 0, 25, 0);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(67, 17);
+            this.toolStripStatusLabel2.Text = "Ready";
             // 
             // tabControlEx1
             // 
@@ -201,11 +262,11 @@
             this.tabControlEx1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlEx1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControlEx1.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabControlEx1.Location = new System.Drawing.Point(0, 26);
+            this.tabControlEx1.Location = new System.Drawing.Point(0, 0);
             this.tabControlEx1.Name = "tabControlEx1";
             this.tabControlEx1.Padding = new System.Drawing.Point(25, 3);
             this.tabControlEx1.SelectedIndex = 0;
-            this.tabControlEx1.Size = new System.Drawing.Size(905, 539);
+            this.tabControlEx1.Size = new System.Drawing.Size(667, 441);
             this.tabControlEx1.TabIndex = 7;
             // 
             // tabPage4
@@ -214,9 +275,9 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 27);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(897, 508);
+            this.tabPage4.Size = new System.Drawing.Size(659, 410);
             this.tabPage4.TabIndex = 0;
-            this.tabPage4.Text = "Gamehacking.org";
+            this.tabPage4.Text = "Read Me";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // webBrowser1
@@ -225,7 +286,7 @@
             this.webBrowser1.Location = new System.Drawing.Point(3, 3);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(891, 502);
+            this.webBrowser1.Size = new System.Drawing.Size(653, 404);
             this.webBrowser1.TabIndex = 0;
             // 
             // tabPage1
@@ -285,24 +346,82 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 26);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.tabControlEx2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tabControlEx1);
+            this.splitContainer1.Size = new System.Drawing.Size(905, 441);
+            this.splitContainer1.SplitterDistance = 234;
+            this.splitContainer1.TabIndex = 9;
+            // 
+            // tabControlEx2
+            // 
+            this.tabControlEx2.Controls.Add(this.tabPage5);
+            this.tabControlEx2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControlEx2.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tabControlEx2.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabControlEx2.Location = new System.Drawing.Point(0, 0);
+            this.tabControlEx2.Name = "tabControlEx2";
+            this.tabControlEx2.Padding = new System.Drawing.Point(25, 3);
+            this.tabControlEx2.SelectedIndex = 0;
+            this.tabControlEx2.Size = new System.Drawing.Size(234, 441);
+            this.tabControlEx2.TabIndex = 8;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.projectTree1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 27);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(226, 410);
+            this.tabPage5.TabIndex = 0;
+            this.tabPage5.Text = "Projects";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // projectTree1
+            // 
+            this.projectTree1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.projectTree1.Location = new System.Drawing.Point(3, 3);
+            this.projectTree1.Name = "projectTree1";
+            this.projectTree1.Size = new System.Drawing.Size(220, 404);
+            this.projectTree1.TabIndex = 0;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(905, 587);
-            this.Controls.Add(this.tabControlEx1);
-            this.Controls.Add(this.statusStrip1);
+            this.ClientSize = new System.Drawing.Size(905, 489);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.statusStrip1);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.Text = "Code Designer";
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.tabControlEx1.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.tabControlEx2.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -328,7 +447,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sourceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem binToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
@@ -336,6 +454,16 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem readMeToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private TabControlEx tabControlEx2;
+        private System.Windows.Forms.TabPage tabPage5;
+        private ProjectTree projectTree1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripMenuItem projectsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem consoleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem codeOutputToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
     }
 }
 

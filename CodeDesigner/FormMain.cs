@@ -12,7 +12,7 @@ namespace CodeDesigner
         public FormMain()
         {
             InitializeComponent();
-            webBrowser1.Navigate("http://gamehacking.org/vb");
+            webBrowser1.Navigate($"{Environment.CurrentDirectory}\\index.html");
         }
 
         private void runToolStripMenuItem_Click(object sender, EventArgs e)
@@ -46,61 +46,67 @@ namespace CodeDesigner
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                var tab = new TabPage()
-                {
-                    Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName),
-                    Tag = openFileDialog.FileName,
-                };
-
-                var ext = Path.GetExtension(openFileDialog.FileName);
-
-                switch (ext)
-                {
-                    case ".bin":
-                        var controlBin = new DisassemblerControl()
-                        {
-                            MemoryDumpPath = openFileDialog.FileName,
-                            mips = mipsSource.Mips,
-                            Dock = DockStyle.Fill
-                        };
-                        controlBin.LoadMemoryDump();
-                        controlBin.Start();
-                        tab.Controls.Add(controlBin);
-                        tabControlEx1.Controls.Add(tab);
-                        tabControlEx1.SelectedTab = tab;
-                        break;
-
-                    case ".cds":
-                        var controlAsm = new AssemblerControl()
-                        {
-                            SourcePath = openFileDialog.FileName,
-                            SourceMips = mipsSource,
-                            Dock = DockStyle.Fill
-                        };
-                        controlAsm.LoadSource();
-                        tab.Controls.Add(controlAsm);
-                        tabControlEx1.Controls.Add(tab);
-                        tabControlEx1.SelectedTab = tab;
-                        break;
-
-                    case ".bms":
-                        var bms = new BMSEditorControl()
-                        {
-                            SourcePath = openFileDialog.FileName,
-                            Dock = DockStyle.Fill
-                        };
-                        bms.LoadSource();
-                        tab.Controls.Add(bms);
-                        tabControlEx1.Controls.Add(tab);
-                        tabControlEx1.SelectedTab = tab;
-                        break;
-
-                    default:
-                        MessageBox.Show("Incorrect file format.");
-                        break;
-                }
+                FileOpen(openFileDialog.FileName);
             } 
         }
+
+        public void FileOpen(string filepath)
+        {
+            var tab = new TabPage()
+            {
+                Text = Path.GetFileNameWithoutExtension(filepath),
+                Tag = filepath,
+            };
+
+            var ext = Path.GetExtension(filepath);
+
+            switch (ext)
+            {
+                case ".bin":
+                    var controlBin = new DisassemblerControl()
+                    {
+                        MemoryDumpPath = filepath,
+                        mips = mipsSource.Mips,
+                        Dock = DockStyle.Fill
+                    };
+                    controlBin.LoadMemoryDump();
+                    controlBin.Start();
+                    tab.Controls.Add(controlBin);
+                    tabControlEx1.Controls.Add(tab);
+                    tabControlEx1.SelectedTab = tab;
+                    break;
+
+                case ".cds":
+                    var controlAsm = new AssemblerControl()
+                    {
+                        SourcePath = filepath,
+                        SourceMips = mipsSource,
+                        Dock = DockStyle.Fill
+                    };
+                    controlAsm.LoadSource();
+                    tab.Controls.Add(controlAsm);
+                    tabControlEx1.Controls.Add(tab);
+                    tabControlEx1.SelectedTab = tab;
+                    break;
+
+                case ".bms":
+                    var bms = new BMSEditorControl()
+                    {
+                        SourcePath = filepath,
+                        Dock = DockStyle.Fill
+                    };
+                    bms.LoadSource();
+                    tab.Controls.Add(bms);
+                    tabControlEx1.Controls.Add(tab);
+                    tabControlEx1.SelectedTab = tab;
+                    break;
+
+                default:
+                    MessageBox.Show("Incorrect file format.");
+                    break;
+            }
+        }
+
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -115,17 +121,12 @@ namespace CodeDesigner
 
         private void sourceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("new.cds", @"/*Code designer source*/");
+            File.WriteAllText(Environment.CurrentDirectory + "\\projects\\lib\\new.cds", @"/*Code designer source*/");
 
-            var tab = new TabPage()
-            {
-                Text = "new.cds",
-                Tag = openFileDialog.FileName,
-            };
-
+            var tab = new TabPage(){ Text = "new.cds" };
             var controlAsm = new AssemblerControl()
             {
-                SourcePath = "new.cds",
+                SourcePath = Environment.CurrentDirectory + "\\projects\\lib\\new.cds",
                 SourceMips = mipsSource,
                 Dock = DockStyle.Fill
             };
@@ -161,34 +162,60 @@ namespace CodeDesigner
             }
         }
 
-        private void binToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            File.WriteAllBytes("new.bin", new byte[33554432]);
-
-            var tab = new TabPage()
-            {
-                Text = "new.bin",
-                Tag = openFileDialog.FileName,
-            };
-
-            var controlBin = new DisassemblerControl()
-            {
-                MemoryDumpPath = "new.bin",
-                mips = mipsSource.Mips,
-                Dock = DockStyle.Fill
-            };
-            controlBin.LoadMemoryDump();
-            controlBin.Start();
-            tab.Controls.Add(controlBin);
-            tabControlEx1.Controls.Add(tab);
-            tabControlEx1.SelectedTab = tab;
-        }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var about = new FormAbout();
             about.ShowDialog();
             about.Dispose();
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            projectTree1.Setup(Environment.CurrentDirectory);
+            projectTree1.InitializeComponent();
+            projectTree1.contextMenu.ItemClicked += ContextMenu_ItemClicked;
+        }
+
+        private void ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            switch (e.ClickedItem.Text)
+            {
+                case "Open":
+                    FileOpen($"{projectTree1.SelectedNode.Name}");
+                    break;
+                case "Cut":
+                    projectTree1.OnCut();
+                    break;
+                case "Copy":
+                    projectTree1.OnCopy();
+                    break;
+                case "Paste":
+                    projectTree1.OnPaste();
+                    break;
+                case "Delete":
+                    projectTree1.OnDelete();
+                    break;
+            }
+        }
+
+        private void projectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var i = 1;
+            while (true)
+            {
+                projectTree1.pathProject = Environment.CurrentDirectory + "\\projects";
+
+                if (Directory.Exists(projectTree1.pathProject + "\\project" + i.ToString()) != true)
+                {
+                    Directory.CreateDirectory(projectTree1.pathProject + "\\project" + i.ToString());
+                    break;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
         }
     }
 }
