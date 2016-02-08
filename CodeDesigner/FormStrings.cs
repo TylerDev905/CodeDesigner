@@ -47,32 +47,30 @@ namespace CodeDesigner
         {
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(MemoryDump);
+            worker.WorkerSupportsCancellation = true;
         }
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             int successCount = 3;
-            int nopCount = 0;
             int matchCount = 0;
             int addressInt = 0;
             int numberCount = 0;
             int letterCount = 0;
             List<byte> buffer = new List<byte>();
-            
+            var reset = false;
+
             var FileData = (byte[])e.Argument;
             for (int i = 0; i < FileData.Length; i = i + 4)
             {
-                var reset = false;
-
                 for (int x = 0; x < 4; x++)
                 {
-                    if (x == 0 && matchCount == 0)
+                    //if the byte is 0x00 and matchcount is nothing then save this address
+                    if (matchCount == 0)
                         addressInt = i;
 
-                    if (FileData[i + x] == 0 && matchCount == 0)
-                        nopCount = 1;
-
-                    else if (FileData[i + x] != 0 && FileData[i + x] > 31 && FileData[i + x] < 127)
+                    //if the byte is not equal to 0x00 and its between the character range
+                    if (FileData[i + x] != 0 && FileData[i + x] > 31 && FileData[i + x] < 127)
                     {
                         matchCount++;
                         var character = FileData[i + x];
@@ -84,11 +82,16 @@ namespace CodeDesigner
                             letterCount++;
                         buffer.Add(FileData[i + x]);
                     }
-                    else if (FileData[i + x] == 0 && matchCount > successCount && nopCount == 1)
+                    else
                     {
                         reset = true;
+                    }
+                    //if we hit 0x00 then the string is finished
+                    //if the match count is above the threshold
+                    if (FileData[i + x] == 0 && matchCount > successCount)
+                    {
                         var item = Encoding.ASCII.GetString(buffer.ToArray());
-                        if (letterCount > 2)
+                        if (letterCount > 3)
                         {
                             var offset = Convert.ToString((int)(Math.Ceiling(((float)matchCount / 4.0))) * 4, 16);
                             Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item);
@@ -97,23 +100,19 @@ namespace CodeDesigner
                                 Offset = (int)(Math.Ceiling(((float)matchCount / 4.0))) * 4,
                                 Item = Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item
                             });
+                            worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
                         }
-                        worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
                         buffer.Clear();
-                    }
-                    else
-                    {
                         reset = true;
                     }
 
-                    if (reset)
-                    {
+                    if (reset) { 
                         matchCount = 0;
-                        nopCount = 0;
                         addressInt = 0;
                         numberCount = 0;
                         letterCount = 0;
                         buffer.Clear();
+                        reset = false;
                     }
 
                 }
@@ -123,10 +122,10 @@ namespace CodeDesigner
 
         private void worker_progressChanged(object sender, ProgressChangedEventArgs e)
         {
-            toolStripProgressBar1.ProgressBar.Value = e.ProgressPercentage;
-            toolStripProgressBar1.ProgressBar.Maximum = 100;
-            toolStripProgressBar1.ProgressBar.Minimum = 0;
-            tssLProgress.Text = string.Format("%{0}", e.ProgressPercentage);  
+                toolStripProgressBar1.ProgressBar.Value = e.ProgressPercentage;
+                toolStripProgressBar1.ProgressBar.Maximum = 100;
+                toolStripProgressBar1.ProgressBar.Minimum = 0;
+                tssLProgress.Text = string.Format("%{0}", e.ProgressPercentage);
         }
 
         private void worker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)

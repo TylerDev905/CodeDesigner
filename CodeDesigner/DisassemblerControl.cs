@@ -428,21 +428,40 @@ namespace CodeDesigner
                 var byte2 = i - 2;
                 var byte3 = i - 1;
 
-                var stringFound = Strings.FirstOrDefault(z => z.Address == byte1);
+                var threshold = 160;
+                StringMatch stringFound = null;
 
+                if (RowType == AddRowType.Up)
+                {
+                    stringFound = Strings.FirstOrDefault(z => z.Address > byte1 - threshold);
+                }
+                else
+                {
+                    stringFound = Strings.FirstOrDefault(z => z.Address < byte1 + threshold);
+                }
+                                
                 if (stringFound != null)
                 {
                     StringAddress = stringFound.Address;
                     StringOffset = stringFound.Offset;
                 }
 
-                if (byte1 <= StringAddress + StringOffset && StringAddress != 0)
+                var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
+                if(word == "00000000")
+                    type = AddressType.Operation;
+                else if (StringAddress != 0 && i > StringAddress + StringOffset)
                     type = AddressType.Byte;
-
-                if(byte1 == StringAddress + StringOffset - 4)
+                else if (StringAddress != 0 && byte1 > StringAddress + StringOffset)
+                    type = AddressType.Byte;
+                else if (StringAddress != 0 && byte2 > StringAddress + StringOffset)
+                    type = AddressType.Byte;
+                else  if (StringAddress != 0 && byte3 > StringAddress + StringOffset)
+                    type = AddressType.Byte;
+                else if(byte1 <= StringAddress + StringOffset)
                 {
                     StringAddress = 0;
                     StringOffset = 0;
+                    type = AddressType.Operation;
                 }
                 
                 if (type == AddressType.Byte) {
@@ -471,13 +490,11 @@ namespace CodeDesigner
 
                 if (type == AddressType.Word)
                 {
-                    var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
                     AddRow(byte1, word, ".word", true);
                 }
 
                 if (type == AddressType.Operation)
                 {
-                    var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
                     AddRow(byte1, word, mips.Disassemble(word), true);
                 }
             }
@@ -522,8 +539,8 @@ namespace CodeDesigner
 
             if (formStringsDump.Address != 0)
             {
-                GoToAddress(Convert.ToString(formStringsDump.Address, 16).PadLeft(8, '0'));
                 Strings = formStringsDump.Strings;
+                GoToAddress(Convert.ToString(formStringsDump.Address, 16).PadLeft(8, '0'));
             }        
 
             formStringsDump.Dispose();
@@ -572,14 +589,14 @@ namespace CodeDesigner
 
             if (this.dgvDisassembler.Columns["ColumnComment"].Index == e.ColumnIndex)
             {
-                if (dgvDisassembler.Rows[e.RowIndex].Cells[3] != null)
-                {
-                    Comments.Add(new Comment()
-                    {
-                        Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
-                        Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
-                    });
-                }
+                //if (dgvDisassembler.Rows[e.RowIndex].Cells[3] != null)
+                //{
+                    //Comments.Add(new Comment()
+                    //{
+                        //Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
+                        //Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                   //});
+                //}
             }
         }
 
