@@ -101,7 +101,7 @@ namespace CodeDesigner
                     tabControlEx1.SelectedTab = tab;
                     break;
 
-                case ".txt":
+                case ".cdl":
                     var txt = new FastColoredTextBoxNS.FastColoredTextBox()
                     {
                         Tag = filepath,
@@ -129,27 +129,11 @@ namespace CodeDesigner
                ((DisassemblerControl)tabControlEx1.SelectedTab.Controls[0]).Save();
             if (type == typeof(BMSEditorControl))
                 ((BMSEditorControl)tabControlEx1.SelectedTab.Controls[0]).Save();
-            if (type == typeof(FastColoredTextBoxNS.FastColoredTextBox)) {
+            if (type == typeof(FastColoredTextBoxNS.FastColoredTextBox))
+            {
                 var textbox = ((FastColoredTextBoxNS.FastColoredTextBox)tabControlEx1.SelectedTab.Controls[0]);
                 File.WriteAllText(textbox.Tag.ToString(), textbox.Text);
             }
-        }
-
-        private void sourceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            File.WriteAllText(Environment.CurrentDirectory + "\\projects\\lib\\new.cds", @"/*Code designer source*/");
-
-            var tab = new TabPage(){ Text = "new.cds" };
-            var controlAsm = new AssemblerControl()
-            {
-                SourcePath = Environment.CurrentDirectory + "\\projects\\lib\\new.cds",
-                SourceMips = mipsSource,
-                Dock = DockStyle.Fill
-            };
-            controlAsm.LoadSource();
-            tab.Controls.Add(controlAsm);
-            tabControlEx1.Controls.Add(tab);
-            tabControlEx1.SelectedTab = tab;
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -232,6 +216,24 @@ namespace CodeDesigner
                 }
             }
 
+        }
+
+        private void cdsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            File.WriteAllText(Environment.CurrentDirectory + "\\projects\\lib\\new.cds", @"/*Code designer source*/");
+            FileOpen(Environment.CurrentDirectory + "\\projects\\lib\\new.cds");
+        }
+
+        private void bmsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            File.WriteAllText(Environment.CurrentDirectory + "\\projects\\lib\\new.bms", @"/*Code designer quickBMS script*/");
+            FileOpen(Environment.CurrentDirectory + "\\projects\\lib\\new.bms");
+        }
+
+        private void cdlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            File.WriteAllText(Environment.CurrentDirectory + "\\projects\\lib\\new.cdl", @"/*Code designer label definition*/");
+            FileOpen(Environment.CurrentDirectory + "\\projects\\lib\\new.cdl");
         }
     }
 }

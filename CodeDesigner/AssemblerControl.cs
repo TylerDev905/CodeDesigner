@@ -19,6 +19,7 @@ namespace CodeDesigner
         public AutocompleteMenu AutoCompleteMenu { get; set; }
         public List<AutocompleteItem> MenuRegisters { get; set; }
         public List<AutocompleteItem> MenuInstructions { get; set; }
+        public List<string> ToolTipInstructions { get; set; }
         public List<AutocompleteItem> MenuCodeDesignerSyntax { get; set; }
         public List<AutocompleteItem> MenuLabels { get; set; }
 
@@ -47,7 +48,8 @@ namespace CodeDesigner
             AutoCompleteMenu.ImageList = Images;
             AutoCompleteMenu.BackColor = Color.LightGray;
             MenuRegisters = AutoCompleteUpdate(SourceMips.Mips.Registers.Select(x => x.Name), 0);
-            MenuInstructions = AutoCompleteUpdate(SourceMips.Mips.Instructions.Select(x => x.Name), 1);
+            ToolTipInstructions = SourceMips.Mips.Instructions.Select(x => x.Info).ToList();
+            MenuInstructions = AutoCompleteUpdate(SourceMips.Mips.Instructions.Select(x => x.Name), 1, ToolTipInstructions);
             MenuCodeDesignerSyntax = AutoCompleteUpdate(MipsSource.CodeDesignerSyntax, 2);
             UpdateAutoComplete();
 
@@ -61,7 +63,7 @@ namespace CodeDesigner
             }
             fstSource.AppendText(" ");
         }
-        
+
         private void fstConsole_TextChanged(object sender, TextChangedEventArgs e)
         {
             e.ChangedRange.ClearStyle(Theme.ExceptionStyle);
@@ -71,7 +73,7 @@ namespace CodeDesigner
         private void fastColoredTextBox1_TextChanged(object sender, TextChangedEventArgs e)
         {
             Range range = (sender as FastColoredTextBox).VisibleRange;
-            
+
             range.ClearStyle(Theme.CommentStyle);
             range.SetStyle(Theme.CommentStyle, @"//.*$", RegexOptions.Multiline);
             range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(/\*.*)", RegexOptions.Singleline);
@@ -88,7 +90,7 @@ namespace CodeDesigner
 
             e.ChangedRange.ClearStyle(Theme.StringStyle);
             e.ChangedRange.SetStyle(Theme.StringStyle, Theme.QuotesPattern, RegexOptions.IgnoreCase);
-            
+
             e.ChangedRange.ClearStyle(Theme.RegisterStyle1);
             e.ChangedRange.SetStyle(Theme.RegisterStyle1, Theme.RegisterPattern1, RegexOptions.IgnoreCase);
 
@@ -106,7 +108,6 @@ namespace CodeDesigner
 
             e.ChangedRange.ClearStyle(Theme.RegisterStyle6);
             e.ChangedRange.SetStyle(Theme.RegisterStyle6, Theme.RegisterPattern6, RegexOptions.IgnoreCase);
-            
         }
 
         public void Save()
@@ -139,34 +140,104 @@ namespace CodeDesigner
                 fstConsole.UpdateScrollbars();
             }
             MenuLabels = AutoCompleteUpdate(SourceMips.Labels.Select(x => x.Text), 3);
-            UpdateAutoComplete();          
+            UpdateAutoComplete();
         }
 
         public void UpdateAutoComplete()
         {
             var items = new List<AutocompleteItem>();
             items.AddRange(MenuRegisters);
-            items.AddRange(MenuInstructions);
-            items.AddRange(MenuCodeDesignerSyntax);
+            items.AddRange(AutoCompleteInstructions());
+            items.AddRange(AutoCompleteSyntax());
 
-            if(MenuLabels != null)
+            if (MenuLabels != null)
                 items.AddRange(MenuLabels);
 
+            AutoCompleteMenu.ShowItemToolTips = true;
             AutoCompleteMenu.Items.SetAutocompleteItems(items);
         }
 
-        public List<AutocompleteItem> AutoCompleteUpdate(IEnumerable<string> textItems, int imageIndex)
+        public List<AutocompleteItem> AutoCompleteUpdate(IEnumerable<string> textItems, int imageIndex, IEnumerable<string> tooltips = null)
         {
             var items = new List<AutocompleteItem>();
-            foreach(var text in textItems)
+
+            for (var i = 0; i < textItems.Count(); i++)
             {
                 items.Add(new AutocompleteItem()
                 {
-                    Text = text.ToLower(),
+                    Text = textItems.ElementAt(i).ToLower(),
                     ImageIndex = imageIndex
+                });
+
+            }
+            return items;
+        }
+
+        public List<AutocompleteItem> AutoCompleteInstructions()
+        {
+            var items = new List<AutocompleteItem>();
+            for (var i = 0; i < SourceMips.Mips.Instructions.Count(); i++)
+            {
+                items.Add(new AutocompleteItem()
+                {
+                    Text = SourceMips.Mips.Instructions[i].Name.ToLower(),
+                    ToolTipTitle = SourceMips.Mips.Instructions[i].Syntax.ToLower(),
+                    ToolTipText = SourceMips.Mips.Instructions[i].Info.ToLower(),
+                    ImageIndex = 1
+
                 });
             }
             return items;
         }
+
+        public List<AutocompleteItem> AutoCompleteSyntax()
+        {
+            var items = new List<AutocompleteItem>();
+            items.Add(new AutocompleteItem()
+            {
+                Text = "address",
+                ToolTipTitle = "address $hex",
+                ToolTipText = "Updates the current address in the assembler with the specified hex string.",
+                ImageIndex = 2
+
+            });
+
+            items.Add(new AutocompleteItem()
+            {
+                Text = "hexcode",
+                ToolTipTitle = "hexcode $hex |or| hexcode :label",
+                ToolTipText = "uses the hex string supplied for data at the current address.",
+                ImageIndex = 2
+
+            });
+
+            items.Add(new AutocompleteItem()
+            {
+                Text = "print",
+                ToolTipTitle = "print \"string\"",
+                ToolTipText = "Converts the given string into hexidecimal and places it at the current address.",
+                ImageIndex = 2
+
+            });
+
+            items.Add(new AutocompleteItem()
+            {
+                Text = "setreg",
+                ToolTipTitle = "setreg reg, $hex |or| setreg reg, :label",
+                ToolTipText = "sets the register given to the hex string supplied.",
+                ImageIndex = 2
+
+            });
+
+            items.Add(new AutocompleteItem()
+            {
+                Text = "call",
+                ToolTipTitle = "call $hex(reg1, reg2) |or| call :label(reg1, reg2)",
+                ToolTipText = "Passes saved registers into argument registers, then sets a jal and link to the hex string supplied.",
+                ImageIndex = 2
+            });
+            return items;
+        }
+
     }
 }
