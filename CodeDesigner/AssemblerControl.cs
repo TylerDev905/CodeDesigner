@@ -45,6 +45,7 @@ namespace CodeDesigner
             ImagesFromFolder("images/autocomplete");
             AutoCompleteMenu = new AutocompleteMenu(fstSource);
             AutoCompleteMenu.ImageList = Images;
+            AutoCompleteMenu.BackColor = Color.LightGray;
             MenuRegisters = AutoCompleteUpdate(SourceMips.Mips.Registers.Select(x => x.Name), 0);
             MenuInstructions = AutoCompleteUpdate(SourceMips.Mips.Instructions.Select(x => x.Name), 1);
             MenuCodeDesignerSyntax = AutoCompleteUpdate(MipsSource.CodeDesignerSyntax, 2);

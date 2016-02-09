@@ -32,6 +32,11 @@ namespace CodeDesigner
             }
         }
 
+        public void Save()
+        {
+            System.IO.File.WriteAllText(SourcePath, fstSource.Text);
+        }
+
         private void fastColoredTextBox1_TextChanged(object sender, TextChangedEventArgs e)
         {
 

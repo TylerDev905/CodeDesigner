@@ -125,9 +125,14 @@ namespace CodeDesigner
 
             if (type == typeof(AssemblerControl))
                 ((AssemblerControl)tabControlEx1.SelectedTab.Controls[0]).Save();
-
             if (type == typeof(DisassemblerControl))
                ((DisassemblerControl)tabControlEx1.SelectedTab.Controls[0]).Save();
+            if (type == typeof(BMSEditorControl))
+                ((BMSEditorControl)tabControlEx1.SelectedTab.Controls[0]).Save();
+            if (type == typeof(FastColoredTextBoxNS.FastColoredTextBox)) {
+                var textbox = ((FastColoredTextBoxNS.FastColoredTextBox)tabControlEx1.SelectedTab.Controls[0]);
+                File.WriteAllText(textbox.Tag.ToString(), textbox.Text);
+            }
         }
 
         private void sourceToolStripMenuItem_Click(object sender, EventArgs e)
