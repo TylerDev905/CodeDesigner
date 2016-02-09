@@ -428,7 +428,7 @@ namespace CodeDesigner
                 var byte2 = i - 2;
                 var byte3 = i - 1;
 
-                var threshold = 160;
+                var threshold = PageSize;
                 StringMatch stringFound = null;
 
                 if (RowType == AddRowType.Up)
@@ -462,7 +462,7 @@ namespace CodeDesigner
                     type = AddressType.Byte;
                 else  if (StringAddress != 0 && byte3 > StringAddress + StringOffset)
                     type = AddressType.Byte;
-                else if(byte1 <= StringAddress + StringOffset)
+                if(byte1 == StringAddress + StringOffset)
                 {
                     StringAddress = 0;
                     StringOffset = 0;

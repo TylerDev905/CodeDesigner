@@ -101,6 +101,17 @@ namespace CodeDesigner
                     tabControlEx1.SelectedTab = tab;
                     break;
 
+                case ".txt":
+                    var txt = new FastColoredTextBoxNS.FastColoredTextBox()
+                    {
+                        Tag = filepath,
+                        Dock = DockStyle.Fill
+                    };
+                    tab.Controls.Add(txt);
+                    tabControlEx1.Controls.Add(tab);
+                    tabControlEx1.SelectedTab = tab;
+                    break;
+
                 default:
                     MessageBox.Show("Incorrect file format.");
                     break;

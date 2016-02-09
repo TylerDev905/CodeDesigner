@@ -23,6 +23,7 @@ namespace CodeDesigner
 
         public Mips32 Mips { get; set; } = new Mips32();
         public static List<string> MipsArgTypes = new List<string> { "Branch", "Code", "Register", "Integer", "Immediate", "Call" };
+        public static List<string> CodeDesignerSyntax = new List<string> { "address", "setreg", "print", "call", "hexcode" };
 
         public static string LabelPattern = @"([_.\[\]a-z0-9]{3,}):";
         public static string TargetPattern = @":([_.\[\]a-z0-9]{3,})";

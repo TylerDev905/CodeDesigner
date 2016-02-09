@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
 using System.Collections.Generic;
+using System.IO;
+using System.Drawing;
 
 namespace CodeDesigner
 {
@@ -13,17 +15,44 @@ namespace CodeDesigner
         public string SourcePath { get; set; } = string.Empty;
         public string Source { get; set; } = string.Empty;
         public MipsSource SourceMips { get; set; }
+        public ImageList Images { get; set; }
+        public AutocompleteMenu AutoCompleteMenu { get; set; }
+        public List<AutocompleteItem> MenuRegisters { get; set; }
+        public List<AutocompleteItem> MenuInstructions { get; set; }
+        public List<AutocompleteItem> MenuCodeDesignerSyntax { get; set; }
+        public List<AutocompleteItem> MenuLabels { get; set; }
 
         public AssemblerControl()
         {
             InitializeComponent();
         }
 
+        public void ImagesFromFolder(string pathImages)
+        {
+            Images = new ImageList();
+
+            DirectoryInfo directory = new DirectoryInfo(pathImages);
+            FileInfo[] fileinfo = directory.GetFiles("*.png");
+
+            foreach (FileInfo info in fileinfo)
+            {
+                Images.Images.Add(Path.GetFileNameWithoutExtension(info.FullName), Image.FromFile(info.FullName));
+            }
+        }
+
         public void LoadSource()
         {
+            ImagesFromFolder("images/autocomplete");
+            AutoCompleteMenu = new AutocompleteMenu(fstSource);
+            AutoCompleteMenu.ImageList = Images;
+            MenuRegisters = AutoCompleteUpdate(SourceMips.Mips.Registers.Select(x => x.Name), 0);
+            MenuInstructions = AutoCompleteUpdate(SourceMips.Mips.Instructions.Select(x => x.Name), 1);
+            MenuCodeDesignerSyntax = AutoCompleteUpdate(MipsSource.CodeDesignerSyntax, 2);
+            UpdateAutoComplete();
+
             if (SourcePath != string.Empty)
             {
-                Source = System.IO.File.ReadAllText(SourcePath);
+                Source = File.ReadAllText(SourcePath);
             }
             if (Source != string.Empty)
             {
@@ -81,11 +110,12 @@ namespace CodeDesigner
 
         public void Save()
         {
-            System.IO.File.WriteAllText(SourcePath, fstSource.Text);
+            File.WriteAllText(SourcePath, fstSource.Text);
         }
 
         public void Run(List<Label> labels)
         {
+
             SourceMips.Source = fstSource.Text;
             rtCode.Text = SourceMips.Parse(labels);
 
@@ -107,6 +137,35 @@ namespace CodeDesigner
                 fstConsole.VerticalScroll.Value = fstConsole.VerticalScroll.Maximum;
                 fstConsole.UpdateScrollbars();
             }
+            MenuLabels = AutoCompleteUpdate(SourceMips.Labels.Select(x => x.Text), 3);
+            UpdateAutoComplete();          
+        }
+
+        public void UpdateAutoComplete()
+        {
+            var items = new List<AutocompleteItem>();
+            items.AddRange(MenuRegisters);
+            items.AddRange(MenuInstructions);
+            items.AddRange(MenuCodeDesignerSyntax);
+
+            if(MenuLabels != null)
+                items.AddRange(MenuLabels);
+
+            AutoCompleteMenu.Items.SetAutocompleteItems(items);
+        }
+
+        public List<AutocompleteItem> AutoCompleteUpdate(IEnumerable<string> textItems, int imageIndex)
+        {
+            var items = new List<AutocompleteItem>();
+            foreach(var text in textItems)
+            {
+                items.Add(new AutocompleteItem()
+                {
+                    Text = text.ToLower(),
+                    ImageIndex = imageIndex
+                });
+            }
+            return items;
         }
     }
 }
