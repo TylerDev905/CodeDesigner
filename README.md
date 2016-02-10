@@ -60,9 +60,8 @@ print "hello world"
 * String dumper
 * Disassembler address formating for .Byte .HalfWord .Word .Float .Double .Quad
 
-#Assembler
-<img src="http://i.imgur.com/vbUDTaX.png" />
 
-#Disassembler
-<img src="http://i.imgur.com/D1HGR6c.png" />
+<img src="http://i.imgur.com/IS3dxgX.png"></img>
+<img src="http://i.imgur.com/hYVFDx3.png"></img>
+<img src="http://i.imgur.com/IHQw3It.png"></img>
 
