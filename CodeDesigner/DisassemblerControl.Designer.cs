@@ -41,12 +41,12 @@
             this.tsBtnLabels = new System.Windows.Forms.ToolStripButton();
             this.tsBtnHistory = new System.Windows.Forms.ToolStripButton();
             this.dgvDisassembler = new CodeDesigner.DisassemblerGrid();
-            this.labelStringView = new CodeDesigner.LabelStringView();
             this.ColumnAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnData = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnOperation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnLabel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.labelStringView = new CodeDesigner.LabelStringView();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDisassembler)).BeginInit();
             this.SuspendLayout();
@@ -163,7 +163,7 @@
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.DeepSkyBlue;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvDisassembler.DefaultCellStyle = dataGridViewCellStyle2;
@@ -189,22 +189,6 @@
             this.dgvDisassembler.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvDisassembler.Size = new System.Drawing.Size(966, 301);
             this.dgvDisassembler.TabIndex = 7;
-            // 
-            // labelStringView
-            // 
-            this.labelStringView.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.labelStringView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.labelStringView.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelStringView.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelStringView.ForeColor = System.Drawing.Color.Black;
-            this.labelStringView.Location = new System.Drawing.Point(0, 0);
-            this.labelStringView.MinimumSize = new System.Drawing.Size(0, 25);
-            this.labelStringView.Name = "labelStringView";
-            this.labelStringView.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.labelStringView.Size = new System.Drawing.Size(966, 25);
-            this.labelStringView.TabIndex = 6;
-            this.labelStringView.Text = "HELLO WOLRD";
-            this.labelStringView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ColumnAddress
             // 
@@ -245,6 +229,22 @@
             this.ColumnComment.HeaderText = "Comment";
             this.ColumnComment.Name = "ColumnComment";
             this.ColumnComment.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // labelStringView
+            // 
+            this.labelStringView.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.labelStringView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.labelStringView.Dock = System.Windows.Forms.DockStyle.Top;
+            this.labelStringView.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelStringView.ForeColor = System.Drawing.Color.Black;
+            this.labelStringView.Location = new System.Drawing.Point(0, 0);
+            this.labelStringView.MinimumSize = new System.Drawing.Size(0, 25);
+            this.labelStringView.Name = "labelStringView";
+            this.labelStringView.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.labelStringView.Size = new System.Drawing.Size(966, 25);
+            this.labelStringView.TabIndex = 6;
+            this.labelStringView.Text = "HELLO WOLRD";
+            this.labelStringView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // DisassemblerControl
             // 

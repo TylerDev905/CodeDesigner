@@ -81,7 +81,7 @@ namespace CodeDesigner
 
                     var path = MemoryDumpPath.Replace(Path.GetFileName(MemoryDumpPath), "");
 
-                    LabelsPath = path + Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".txt";
+                    LabelsPath = path + Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".cdl";
                     LoadLabels();
 
                     HistoryPath = path + Path.GetFileNameWithoutExtension(MemoryDumpPath) + ".cdh";
@@ -168,10 +168,10 @@ namespace CodeDesigner
 
         private void JumpToAddres()
         {
-            if (Regex.IsMatch(dgvDisassembler.SelectedRows[0].Cells[2].Value.ToString(), Theme.WordPattern))
+            if (Regex.IsMatch(dgvDisassembler.SelectedRows[0].Cells[2].Value.ToString(), Theme.WordPattern, RegexOptions.IgnoreCase))
                 GoToAddress(dgvDisassembler.SelectedRows[0].Cells[2].Value.ToString());
 
-            if (Regex.IsMatch(dgvDisassembler.SelectedRows[0].Cells[1].Value.ToString(), Theme.WordPattern))
+            if (Regex.IsMatch(dgvDisassembler.SelectedRows[0].Cells[1].Value.ToString(), Theme.WordPattern, RegexOptions.IgnoreCase))
                 GoToAddress(dgvDisassembler.SelectedRows[0].Cells[1].Value.ToString());
         }
 
@@ -416,7 +416,7 @@ namespace CodeDesigner
 
         public void RemoveRows(int index, int count)
         {
-            for(var i = 0; i < count; i++)
+            for(var i = 0; i < count -1; i++)
                 this.dgvDisassembler.Rows.RemoveAt(index);
         }
 
@@ -432,18 +432,11 @@ namespace CodeDesigner
                 StringMatch stringFound = null;
 
                 if (RowType == AddRowType.Up)
-                {
-                    stringFound = Strings.FirstOrDefault(z => z.Address > byte1 - threshold);
-                }
-
+                    stringFound = Strings.LastOrDefault(z => z.Address < byte1 - threshold);
                 else if(RowType == AddRowType.Down)
-                {
                     stringFound = Strings.FirstOrDefault(z => z.Address < byte1 + threshold);
-                }
                 else
-                {
                     StringAddress = 0;
-                }
                                 
                 if (stringFound != null)
                 {
@@ -452,15 +445,14 @@ namespace CodeDesigner
                 }
 
                 var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
-                if(word == "00000000")
-                    type = AddressType.Operation;
-                else if (StringAddress != 0 && i > StringAddress + StringOffset)
+
+                if (StringAddress != 0 && i > StringAddress + StringOffset && MemoryDump[i] > 31 && MemoryDump[i] < 127)
                     type = AddressType.Byte;
-                else if (StringAddress != 0 && byte1 > StringAddress + StringOffset)
+                else if (StringAddress != 0 && byte1 > StringAddress + StringOffset && MemoryDump[byte1] > 31 && MemoryDump[byte1] < 127)
                     type = AddressType.Byte;
-                else if (StringAddress != 0 && byte2 > StringAddress + StringOffset)
+                else if (StringAddress != 0 && byte2 > StringAddress + StringOffset && MemoryDump[byte2] > 31 && MemoryDump[byte2] < 127)
                     type = AddressType.Byte;
-                else  if (StringAddress != 0 && byte3 > StringAddress + StringOffset)
+                else  if (StringAddress != 0 && byte3 > StringAddress + StringOffset && MemoryDump[byte3] > 31 && MemoryDump[byte3] < 127)
                     type = AddressType.Byte;
                 if(byte1 == StringAddress + StringOffset)
                 {
@@ -533,7 +525,6 @@ namespace CodeDesigner
         
         private void tsBtnAddress_Click(object sender, EventArgs e)
         {
-            if (Regex.IsMatch(tsTbAddress.Text, Theme.WordPattern))
                 GoToAddress(tsTbAddress.Text.PadLeft(8, '0'));
         }
 
@@ -594,14 +585,14 @@ namespace CodeDesigner
 
             if (this.dgvDisassembler.Columns["ColumnComment"].Index == e.ColumnIndex)
             {
-                //if (dgvDisassembler.Rows[e.RowIndex].Cells[3] != null)
-                //{
-                    //Comments.Add(new Comment()
-                    //{
-                        //Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
-                        //Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
-                   //});
-                //}
+                if (dgvDisassembler.Rows[e.RowIndex].Cells[3] != null)
+                {
+                    Comments.Add(new Comment()
+                    {
+                        Address = Convert.ToInt32(dgvDisassembler.Rows[e.RowIndex].Cells[0].Value.ToString(), 16),
+                        Text = dgvDisassembler.Rows[e.RowIndex].Cells[3].Value.ToString()
+                   });
+                }
             }
         }
 

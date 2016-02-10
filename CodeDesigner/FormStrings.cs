@@ -117,7 +117,7 @@ namespace CodeDesigner
 
                 }
             }
-            Items = Items.OrderBy(x => x).ToList();
+            //Items = Items.OrderBy(x => x).ToList();
         }
 
         private void worker_progressChanged(object sender, ProgressChangedEventArgs e)

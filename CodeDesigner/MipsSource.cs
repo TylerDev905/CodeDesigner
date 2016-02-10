@@ -49,12 +49,11 @@ namespace CodeDesigner
             Source = source;
         }
 
-        public string Parse(List<Label> labels)
+        public string Parse()
         {
             ILineCollection = new List<ILine>();
             LineNumber = 0;
             LineCount = 0;
-            Labels = new List<Label>(labels);
             AssembledCode = string.Empty;
             Address = 0;
             Logs = new List<Error>();

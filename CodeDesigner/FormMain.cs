@@ -22,11 +22,11 @@ namespace CodeDesigner
             {
                 var assembler = (AssemblerControl)tabControlEx1.SelectedTab.Controls[0];
                 assembler.Save();
-                assembler.Run(GetAllLabels());
+                assembler.Run();
             }
         }
 
-        private List<Label> GetAllLabels()
+        private List<Label> GetAllLabelsFromOpenWindows()
         {
             var type = tabControlEx1.SelectedTab.Controls[0].GetType();
             var labels = new List<Label>();
@@ -104,9 +104,13 @@ namespace CodeDesigner
                 case ".cdl":
                     var txt = new FastColoredTextBoxNS.FastColoredTextBox()
                     {
+                        Text = File.ReadAllText(filepath),
                         Tag = filepath,
+                        BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64))))),
+                        ForeColor = System.Drawing.SystemColors.Control,
+                        LineNumberColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64))))),
                         Dock = DockStyle.Fill
-                    };
+                    };           
                     tab.Controls.Add(txt);
                     tabControlEx1.Controls.Add(tab);
                     tabControlEx1.SelectedTab = tab;
@@ -155,7 +159,7 @@ namespace CodeDesigner
                     tabControlEx1.SelectedTab.Text = Path.GetFileName(saveFileDialog1.FileName);
                     var disassembler = (DisassemblerControl)tabControlEx1.SelectedTab.Controls[0];
                     disassembler.MemoryDumpPath = saveFileDialog1.FileName;
-                    disassembler.LabelsPath = Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + ".txt";
+                    disassembler.LabelsPath = Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + ".cdl";
                     disassembler.HistoryPath = Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + ".cdh";
                     disassembler.Save();
                 }
@@ -215,7 +219,6 @@ namespace CodeDesigner
                     i++;
                 }
             }
-
         }
 
         private void cdsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -234,6 +237,16 @@ namespace CodeDesigner
         {
             File.WriteAllText(Environment.CurrentDirectory + "\\projects\\lib\\new.cdl", @"/*Code designer label definition*/");
             FileOpen(Environment.CurrentDirectory + "\\projects\\lib\\new.cdl");
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

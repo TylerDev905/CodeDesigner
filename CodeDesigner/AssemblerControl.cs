@@ -7,6 +7,7 @@ using FastColoredTextBoxNS;
 using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
+using System;
 
 namespace CodeDesigner
 {
@@ -17,11 +18,6 @@ namespace CodeDesigner
         public MipsSource SourceMips { get; set; }
         public ImageList Images { get; set; }
         public AutocompleteMenu AutoCompleteMenu { get; set; }
-        public List<AutocompleteItem> MenuRegisters { get; set; }
-        public List<AutocompleteItem> MenuInstructions { get; set; }
-        public List<string> ToolTipInstructions { get; set; }
-        public List<AutocompleteItem> MenuCodeDesignerSyntax { get; set; }
-        public List<AutocompleteItem> MenuLabels { get; set; }
 
         public AssemblerControl()
         {
@@ -45,14 +41,13 @@ namespace CodeDesigner
         {
             ImagesFromFolder("images/autocomplete");
             AutoCompleteMenu = new AutocompleteMenu(fstSource);
+            AutoCompleteMenu.SelectedColor = Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             AutoCompleteMenu.ImageList = Images;
             AutoCompleteMenu.BackColor = Color.LightGray;
-            MenuRegisters = AutoCompleteUpdate(SourceMips.Mips.Registers.Select(x => x.Name), 0);
-            ToolTipInstructions = SourceMips.Mips.Instructions.Select(x => x.Info).ToList();
-            MenuInstructions = AutoCompleteUpdate(SourceMips.Mips.Instructions.Select(x => x.Name), 1, ToolTipInstructions);
-            MenuCodeDesignerSyntax = AutoCompleteUpdate(MipsSource.CodeDesignerSyntax, 2);
+            AutoCompleteMenu.Font = new Font("Consolas", 10F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+            LoadLabelsFromProject();        
             UpdateAutoComplete();
-
+            
             if (SourcePath != string.Empty)
             {
                 Source = File.ReadAllText(SourcePath);
@@ -61,7 +56,45 @@ namespace CodeDesigner
             {
                 fstSource.Text = Source;
             }
-            fstSource.AppendText(" ");
+        }
+
+        public void LoadLabelsFromProject()
+        {
+            var path = SourcePath.Replace($"\\{Path.GetFileName(SourcePath)}", "");
+            DirectoryInfo directory = new DirectoryInfo(path);
+            FileInfo[] fileinfo = directory.GetFiles("*.cdl");
+            foreach (FileInfo info in fileinfo)
+            {
+                LoadLabelsFromFile(info.FullName);
+            }
+        }
+
+        public void LoadLabelsFromFile(string cdlpath)
+        {
+            if (File.Exists(cdlpath))
+            {
+                var text = File.ReadAllText(cdlpath);
+                MatchCollection matches = Regex.Matches(text.Replace("\r", ""), @"(\b[A-Z0-9\.\-\*\(\)\[\]\\\/\=\,\&\?\~ \. \%\^]{3,})[\n ]{0,}([a-f0-9]{8}[ ]{1}[a-fA0-9]{8}[ ]{0,}[\n]{0,1}){1,}[ ]{0,}[\n]{0,1}", RegexOptions.IgnoreCase);
+                foreach (Match item in matches)
+                {
+                    var x = 0;
+                    foreach (string stringItem in item.Groups[0].Value.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (Regex.IsMatch(stringItem, Theme.WordPattern))
+                        {
+                            if (SourceMips.Labels.Where(y => y.Text == $"_{item.Groups[1].Value.Trim().Replace(" ", "_")}[{x}]").Count() == 0)
+                            {
+                                SourceMips.Labels.Add(new Label()
+                                {
+                                    Address = Convert.ToInt32(stringItem.Substring(1, 7), 16),
+                                    Text = $"_{item.Groups[1].Value.Trim().Replace(" ", "_")}[{x}]"
+                                });
+                            }
+                        }
+                        x++;
+                    }
+                }
+            }
         }
 
         private void fstConsole_TextChanged(object sender, TextChangedEventArgs e)
@@ -115,11 +148,11 @@ namespace CodeDesigner
             File.WriteAllText(SourcePath, fstSource.Text);
         }
 
-        public void Run(List<Label> labels)
+        public void Run()
         {
-
             SourceMips.Source = fstSource.Text;
-            rtCode.Text = SourceMips.Parse(labels);
+            LoadLabelsFromProject();
+            rtCode.Text = SourceMips.Parse();
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -139,19 +172,16 @@ namespace CodeDesigner
                 fstConsole.VerticalScroll.Value = fstConsole.VerticalScroll.Maximum;
                 fstConsole.UpdateScrollbars();
             }
-            MenuLabels = AutoCompleteUpdate(SourceMips.Labels.Select(x => x.Text), 3);
             UpdateAutoComplete();
         }
 
         public void UpdateAutoComplete()
         {
             var items = new List<AutocompleteItem>();
-            items.AddRange(MenuRegisters);
+            items.AddRange(AutoCompleteUpdate(SourceMips.Mips.Registers.Select(x => x.Name), 0));
             items.AddRange(AutoCompleteInstructions());
             items.AddRange(AutoCompleteSyntax());
-
-            if (MenuLabels != null)
-                items.AddRange(MenuLabels);
+            items.AddRange(AutoCompleteUpdate(SourceMips.Labels.Select(x => x.Text), 3));
 
             AutoCompleteMenu.ShowItemToolTips = true;
             AutoCompleteMenu.Items.SetAutocompleteItems(items);
@@ -165,7 +195,7 @@ namespace CodeDesigner
             {
                 items.Add(new AutocompleteItem()
                 {
-                    Text = textItems.ElementAt(i).ToLower(),
+                    Text = textItems.ElementAt(i),
                     ImageIndex = imageIndex
                 });
 

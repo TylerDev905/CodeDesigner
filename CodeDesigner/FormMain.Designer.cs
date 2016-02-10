@@ -33,6 +33,10 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.cdsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cdlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bmsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsmOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -64,10 +68,8 @@
             this.tabControlEx2 = new CodeDesigner.TabControlEx();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.projectTree1 = new CodeDesigner.ProjectTree();
-            this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.cdsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cdlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bmsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tabControlEx1.SuspendLayout();
@@ -127,6 +129,37 @@
             this.projectToolStripMenuItem.Text = "Project";
             this.projectToolStripMenuItem.Click += new System.EventHandler(this.projectToolStripMenuItem_Click);
             // 
+            // fileToolStripMenuItem1
+            // 
+            this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cdsToolStripMenuItem,
+            this.cdlToolStripMenuItem,
+            this.bmsToolStripMenuItem});
+            this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
+            this.fileToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.fileToolStripMenuItem1.Text = "File";
+            // 
+            // cdsToolStripMenuItem
+            // 
+            this.cdsToolStripMenuItem.Name = "cdsToolStripMenuItem";
+            this.cdsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cdsToolStripMenuItem.Text = ".cds";
+            this.cdsToolStripMenuItem.Click += new System.EventHandler(this.cdsToolStripMenuItem_Click);
+            // 
+            // cdlToolStripMenuItem
+            // 
+            this.cdlToolStripMenuItem.Name = "cdlToolStripMenuItem";
+            this.cdlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cdlToolStripMenuItem.Text = ".cdl";
+            this.cdlToolStripMenuItem.Click += new System.EventHandler(this.cdlToolStripMenuItem_Click);
+            // 
+            // bmsToolStripMenuItem
+            // 
+            this.bmsToolStripMenuItem.Name = "bmsToolStripMenuItem";
+            this.bmsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bmsToolStripMenuItem.Text = ".bms";
+            this.bmsToolStripMenuItem.Click += new System.EventHandler(this.bmsToolStripMenuItem_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -168,6 +201,9 @@
             // 
             // editToolStripMenuItem
             // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findToolStripMenuItem,
+            this.findReplaceToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(52, 22);
             this.editToolStripMenuItem.Text = "Edit";
@@ -391,36 +427,19 @@
             this.projectTree1.Size = new System.Drawing.Size(220, 404);
             this.projectTree1.TabIndex = 0;
             // 
-            // fileToolStripMenuItem1
+            // findToolStripMenuItem
             // 
-            this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cdsToolStripMenuItem,
-            this.cdlToolStripMenuItem,
-            this.bmsToolStripMenuItem});
-            this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
-            this.fileToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.fileToolStripMenuItem1.Text = "File";
+            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.findToolStripMenuItem.Text = "Find";
+            this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
             // 
-            // cdsToolStripMenuItem
+            // findReplaceToolStripMenuItem
             // 
-            this.cdsToolStripMenuItem.Name = "cdsToolStripMenuItem";
-            this.cdsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.cdsToolStripMenuItem.Text = ".cds";
-            this.cdsToolStripMenuItem.Click += new System.EventHandler(this.cdsToolStripMenuItem_Click);
-            // 
-            // cdlToolStripMenuItem
-            // 
-            this.cdlToolStripMenuItem.Name = "cdlToolStripMenuItem";
-            this.cdlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.cdlToolStripMenuItem.Text = ".cdl";
-            this.cdlToolStripMenuItem.Click += new System.EventHandler(this.cdlToolStripMenuItem_Click);
-            // 
-            // bmsToolStripMenuItem
-            // 
-            this.bmsToolStripMenuItem.Name = "bmsToolStripMenuItem";
-            this.bmsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.bmsToolStripMenuItem.Text = ".bms";
-            this.bmsToolStripMenuItem.Click += new System.EventHandler(this.bmsToolStripMenuItem_Click);
+            this.findReplaceToolStripMenuItem.Name = "findReplaceToolStripMenuItem";
+            this.findReplaceToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.findReplaceToolStripMenuItem.Text = "Find/Replace";
+            this.findReplaceToolStripMenuItem.Click += new System.EventHandler(this.findReplaceToolStripMenuItem_Click);
             // 
             // FormMain
             // 
@@ -494,6 +513,8 @@
         private System.Windows.Forms.ToolStripMenuItem cdsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cdlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bmsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem findReplaceToolStripMenuItem;
     }
 }
 
