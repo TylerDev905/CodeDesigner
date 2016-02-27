@@ -63,6 +63,7 @@ namespace CodeDesigner
             var path = SourcePath.Replace($"\\{Path.GetFileName(SourcePath)}", "");
             DirectoryInfo directory = new DirectoryInfo(path);
             FileInfo[] fileinfo = directory.GetFiles("*.cdl");
+            SourceMips.Labels.Clear();
             foreach (FileInfo info in fileinfo)
             {
                 LoadLabelsFromFile(info.FullName);

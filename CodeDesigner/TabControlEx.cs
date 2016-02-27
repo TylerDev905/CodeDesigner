@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
+using System;
 
 
 namespace CodeDesigner
@@ -7,7 +8,7 @@ namespace CodeDesigner
 
     class TabControlEx : TabControl
     {
-        public string pathCloseImg = @"\images\close.png";
+        public string pathCloseImg = Environment.CurrentDirectory + @"\images\close.png";
         public string onCloseMsg = "Would you like to close this tab?";
 
         public TabControlEx()

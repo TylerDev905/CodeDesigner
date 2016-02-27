@@ -416,7 +416,7 @@ namespace CodeDesigner
 
         public void RemoveRows(int index, int count)
         {
-            for(var i = 0; i < count -1; i++)
+            for(var i = 0; i < count - 1; i++)
                 this.dgvDisassembler.Rows.RemoveAt(index);
         }
 
