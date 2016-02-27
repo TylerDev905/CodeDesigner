@@ -106,12 +106,10 @@ namespace CodeDesigner
 
         private void fastColoredTextBox1_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Range range = (sender as FastColoredTextBox).VisibleRange;
-
-            range.ClearStyle(Theme.CommentStyle);
-            range.SetStyle(Theme.CommentStyle, @"//.*$", RegexOptions.Multiline);
-            range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(/\*.*)", RegexOptions.Singleline);
-            range.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(.*\*/)", RegexOptions.Singleline |
+            e.ChangedRange.ClearStyle(Theme.CommentStyle);
+            e.ChangedRange.SetStyle(Theme.CommentStyle, @"//.*$", RegexOptions.Multiline);
+            e.ChangedRange.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(/\*.*)", RegexOptions.Singleline);
+            e.ChangedRange.SetStyle(Theme.CommentStyle, @"(/\*.*?\*/)|(.*\*/)", RegexOptions.Singleline |
                         RegexOptions.RightToLeft);
 
             e.ChangedRange.ClearStyle(Theme.LabelStyle);

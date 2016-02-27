@@ -428,38 +428,38 @@ namespace CodeDesigner
                 var byte2 = i - 2;
                 var byte3 = i - 1;
 
-                var threshold = PageSize;
-                StringMatch stringFound = null;
+                //var threshold = PageSize;
+                //StringMatch stringFound = null;
 
-                if (RowType == AddRowType.Up)
-                    stringFound = Strings.LastOrDefault(z => z.Address < byte1 - threshold);
-                else if(RowType == AddRowType.Down)
-                    stringFound = Strings.FirstOrDefault(z => z.Address < byte1 + threshold);
-                else
-                    StringAddress = 0;
+                //if (RowType == AddRowType.Up)
+                //    stringFound = Strings.LastOrDefault(z => z.Address < byte1 - threshold);
+                //else if(RowType == AddRowType.Down)
+                //    stringFound = Strings.FirstOrDefault(z => z.Address < byte1 + threshold);
+                //else
+                //    StringAddress = 0;
                                 
-                if (stringFound != null)
-                {
-                    StringAddress = stringFound.Address;
-                    StringOffset = stringFound.Offset;
-                }
+                //if (stringFound != null)
+                //{
+                //    StringAddress = stringFound.Address;
+                //    StringOffset = stringFound.Offset;
+                //}
 
                 var word = ByteToText(MemoryDump[i]) + ByteToText(MemoryDump[byte3]) + ByteToText(MemoryDump[byte2]) + ByteToText(MemoryDump[byte1]);
 
-                if (StringAddress != 0 && i > StringAddress + StringOffset && MemoryDump[i] > 31 && MemoryDump[i] < 127)
-                    type = AddressType.Byte;
-                else if (StringAddress != 0 && byte1 > StringAddress + StringOffset && MemoryDump[byte1] > 31 && MemoryDump[byte1] < 127)
-                    type = AddressType.Byte;
-                else if (StringAddress != 0 && byte2 > StringAddress + StringOffset && MemoryDump[byte2] > 31 && MemoryDump[byte2] < 127)
-                    type = AddressType.Byte;
-                else  if (StringAddress != 0 && byte3 > StringAddress + StringOffset && MemoryDump[byte3] > 31 && MemoryDump[byte3] < 127)
-                    type = AddressType.Byte;
-                if(byte1 == StringAddress + StringOffset)
-                {
-                    StringAddress = 0;
-                    StringOffset = 0;
-                    type = AddressType.Operation;
-                }
+                //if (StringAddress != 0 && i > StringAddress + StringOffset && MemoryDump[i] > 31 && MemoryDump[i] < 127)
+                //    type = AddressType.Byte;
+                //else if (StringAddress != 0 && byte1 > StringAddress + StringOffset && MemoryDump[byte1] > 31 && MemoryDump[byte1] < 127)
+                //    type = AddressType.Byte;
+                //else if (StringAddress != 0 && byte2 > StringAddress + StringOffset && MemoryDump[byte2] > 31 && MemoryDump[byte2] < 127)
+                //    type = AddressType.Byte;
+                //else  if (StringAddress != 0 && byte3 > StringAddress + StringOffset && MemoryDump[byte3] > 31 && MemoryDump[byte3] < 127)
+                //    type = AddressType.Byte;
+                //if(byte1 == StringAddress + StringOffset)
+                //{
+                //    StringAddress = 0;
+                //    StringOffset = 0;
+                //    type = AddressType.Operation;
+                //}
                 
                 if (type == AddressType.Byte) {
 
