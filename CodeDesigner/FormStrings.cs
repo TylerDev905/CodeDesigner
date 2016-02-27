@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CodeDesigner
@@ -16,8 +13,9 @@ namespace CodeDesigner
         private BackgroundWorker worker { get; set; } = new BackgroundWorker();
         public byte[] MemoryDump { get; set; }
         public List<string> Items { get; set; }  = new List<string>();
-        public int Address { get; set; } 
-
+        public int Address { get; set; }
+        public List<DisassemblerControl.StringMatch> Strings { get; set; } = new List<DisassemblerControl.StringMatch>();
+        
         public FormStrings()
         {
             InitializeComponent();
@@ -49,87 +47,85 @@ namespace CodeDesigner
         {
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync(MemoryDump);
+            worker.WorkerSupportsCancellation = true;
         }
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             int successCount = 3;
-            int nopCount = 0;
             int matchCount = 0;
             int addressInt = 0;
             int numberCount = 0;
             int letterCount = 0;
             List<byte> buffer = new List<byte>();
-            
+            var reset = false;
+
             var FileData = (byte[])e.Argument;
             for (int i = 0; i < FileData.Length; i = i + 4)
             {
-                var reset = false;
-
                 for (int x = 0; x < 4; x++)
                 {
-                    if (x == 0 && matchCount == 0)
-                    {
+                    //if the byte is 0x00 and matchcount is nothing then save this address
+                    if (matchCount == 0)
                         addressInt = i;
-                    }
-                    if (FileData[i + x] == 0 && matchCount == 0)
-                    {
-                        nopCount = 1;
-                    }
-                    else if (FileData[i + x] != 0 && FileData[i + x] > 31 && FileData[i + x] < 127)
+
+                    //if the byte is not equal to 0x00 and its between the character range
+                    if (FileData[i + x] != 0 && FileData[i + x] > 31 && FileData[i + x] < 127)
                     {
                         matchCount++;
                         var character = FileData[i + x];
                         if (character > 47 && character < 58)
-                        {
                             numberCount++;
-                        }
                         if (character > 64 && character < 91)
-                        {
                             letterCount++;
-                        }
                         if (character > 96 && character < 123)
-                        {
                             letterCount++;
-                        }
                         buffer.Add(FileData[i + x]);
-                    }
-                    else if (FileData[i + x] == 0 && matchCount > successCount && nopCount.Equals(1))
-                    {
-                        reset = true;
-                        var item = Encoding.ASCII.GetString(buffer.ToArray());
-                        if (letterCount > 2)
-                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item);
-                        
-                        worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
-                        buffer.Clear();
                     }
                     else
                     {
                         reset = true;
                     }
-
-                    if (reset)
+                    //if we hit 0x00 then the string is finished
+                    //if the match count is above the threshold
+                    if (FileData[i + x] == 0 && matchCount > successCount)
                     {
+                        var item = Encoding.ASCII.GetString(buffer.ToArray());
+                        if (letterCount > 3)
+                        {
+                            var offset = Convert.ToString((int)(Math.Ceiling(((float)matchCount / 4.0))) * 4, 16);
+                            Items.Add(Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item);
+                            Strings.Add(new DisassemblerControl.StringMatch() {
+                                Address = addressInt,
+                                Offset = (int)(Math.Ceiling(((float)matchCount / 4.0))) * 4,
+                                Item = Convert.ToString(addressInt, 16).PadLeft(8, '0') + " " + item
+                            });
+                            worker.ReportProgress((int)(((float)i / (float)33554432) * 100));
+                        }
+                        buffer.Clear();
+                        reset = true;
+                    }
+
+                    if (reset) { 
                         matchCount = 0;
-                        nopCount = 0;
                         addressInt = 0;
                         numberCount = 0;
                         letterCount = 0;
                         buffer.Clear();
+                        reset = false;
                     }
 
                 }
             }
-            Items = Items.OrderBy(x => x).ToList();
+            //Items = Items.OrderBy(x => x).ToList();
         }
 
         private void worker_progressChanged(object sender, ProgressChangedEventArgs e)
         {
-            toolStripProgressBar1.ProgressBar.Value = e.ProgressPercentage;
-            toolStripProgressBar1.ProgressBar.Maximum = 100;
-            toolStripProgressBar1.ProgressBar.Minimum = 0;
-            tssLProgress.Text = string.Format("%{0}", e.ProgressPercentage);  
+                toolStripProgressBar1.ProgressBar.Value = e.ProgressPercentage;
+                toolStripProgressBar1.ProgressBar.Maximum = 100;
+                toolStripProgressBar1.ProgressBar.Minimum = 0;
+                tssLProgress.Text = string.Format("%{0}", e.ProgressPercentage);
         }
 
         private void worker_CompletedWork(object sender, RunWorkerCompletedEventArgs e)
@@ -140,6 +136,5 @@ namespace CodeDesigner
             toolStripProgressBar1.Visible = false;
             tssLProgress.Visible = false;
         }
-
     }
 }

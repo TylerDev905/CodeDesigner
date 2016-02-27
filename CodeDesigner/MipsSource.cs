@@ -23,12 +23,13 @@ namespace CodeDesigner
 
         public Mips32 Mips { get; set; } = new Mips32();
         public static List<string> MipsArgTypes = new List<string> { "Branch", "Code", "Register", "Integer", "Immediate", "Call" };
+        public static List<string> CodeDesignerSyntax = new List<string> { "address", "setreg", "print", "call", "hexcode" };
 
-        public static string LabelPattern = @"([_.a-z0-9]{3,15}):";
-        public static string TargetPattern = @":([_.a-z0-9]{3,15})";
-        public static string WordPattern = "([a-f0-9]{8})";
-        public static string HalfWordPattern = "([a-f0-9]{4})";
-        public static string BytePatternPattern = "([a-f0-9]{2})";
+        public static string LabelPattern = @"([_.\[\]a-z0-9]{3,}):";
+        public static string TargetPattern = @":([_.\[\]a-z0-9]{3,})";
+        public static string WordPattern = "([A-Fa-f0-9]{8})";
+        public static string HalfWordPattern = "([A-Fa-f0-9]{4})";
+        public static string BytePatternPattern = "([A-Fa-f0-9]{2})";
         public static string RegisterPattern = @"([a-z0-9]{2,})";
         public static string BetweenCurleyBraces = @"\((.{1,})\)";
         public static string BetweenQuotes = "\"(.{1,})\"";
@@ -53,7 +54,6 @@ namespace CodeDesigner
             ILineCollection = new List<ILine>();
             LineNumber = 0;
             LineCount = 0;
-            Labels = new List<Label>();
             AssembledCode = string.Empty;
             Address = 0;
             Logs = new List<Error>();
@@ -314,7 +314,7 @@ namespace CodeDesigner
                 {
                     try
                     {
-                        var parsed = Regex.Match(item, TargetPattern);
+                        var parsed = Regex.Match(item, TargetPattern, RegexOptions.IgnoreCase);
                         var label = Labels.Single(x => x.Text == parsed.Groups[1].Value);
                         var instruction = Mips.Instructions.Single(x => x.Name.Equals(Helper.ParseInstructionName(item.ToUpper())));
                         var syntaxArgs = Helper.ParseArgs(instruction.Syntax);
@@ -409,13 +409,13 @@ namespace CodeDesigner
                     {
                         try
                         {
-                            var parsed = Regex.Match(item, TargetPattern);
-                            hex = Convert.ToString(Labels.Single(x => x.Text == parsed.Groups[1].Value).Address, 16);
+                            var parsed = Regex.Match(item, TargetPattern, RegexOptions.IgnoreCase);
+                            hex = Convert.ToString(Labels.FirstOrDefault(x => x.Text == parsed.Groups[1].Value).Address, 16).PadLeft(8,'0');
                         }
                         catch
                         {
                             AddError($"Line {LineNumber + 1}: Exception thrown - Hexcode argument of type label is not defined");
-                        }
+                       }
                     }
                     hasLabel = true;
                 }

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeDesigner</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/user.css">
+    <link rel="stylesheet" href="assets/bootstrap/fonts/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="jumbotron hero">
+        <div class="container">
+            <div class="row">
+                <div class="get-it">
+                    <h1 class="text-center text-success">Code Designer</h1>
+                    <p class="text-center">A MIPS IDE that can assemble/disassemble Mips32 assembly. It also has support for quickBMS scripts that can be used to unpack and repack file archives.</p>
+                    <p class="lead text-center"><a class="btn btn-primary btn-lg" role="button" href="#"><span class="fa fa-apple"></span> Conversation</a><a class="btn btn-danger btn-lg btn-btn-warning btn-lg" role="button" href=""><span class="fa fa-google"></span> Github</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="testimonials">
+        <h2 class="text-center">Features </h2>
+        <ul class="list-group">
+            <li class="list-group-item"><span>A powerful assembler that can take mips32 assembly source code and convert it into hexidecimal code.</span></li>
+            <li class="list-group-item"><span>Supports EE, COP0, COP1 and over 285 mips instructions</span></li>
+            <li class="list-group-item"><span>A powerful disassembler that can map mips32 assembly memory dumps/bins.</span></li>
+            <li class="list-group-item"><span>BMS script editor that can pack and unpack archives.</span></li>
+            <li class="list-group-item"><span>Syntax highlighting of all supported languages</span></li>
+            <li class="list-group-item"><span>Code designer syntax that helps cut down the amount of code needed to code in mips assembly</span></li>
+            <li class="list-group-item"><span>Labels that can be shared between the assembler and disassembler windows</span></li>
+            <li class="list-group-item"><span>String dumper that can scan memory dumps or bins</span></li>
+        </ul>
+    </section>
+    <h2 class="text-center">Assembler </h2>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Open a Code Designer source file for assembling.</h4><span>File &gt; Open - select a file with the extension .cds</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Create a new Code Designer source file for assembling.</h4><span>File &gt; New &gt; Source </span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Open a Code Designer source file for assembling.</h4><span>File &gt; Open - select a file with the extension .cds</span></li>
+    </ul>
+    <h3 class="text-center">Code Designer Syntax</h3>
+    <ul class="list-group"></ul>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Setreg - sets the register to the 8 digit hex string</h4><span>setreg a0, $12345678 or setreg a0, :label </span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Address - sets the address to the 8 digit hex string</h4><span>address $12345678</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Print - will convert the string into its hexidecimal version</h4><span>print "hello world"</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">hexcode $12345678</h4><span>hexcode $12345678 or hexcode :label</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">call - will pass saved registers into parameter registers and preform a jal instruction</h4><span>call $12345678(s0, s1, s2, s3) or call :label(s0, s1, s2, s3)</span></li>
+    </ul>
+    <h3 class="text-center">Code Designer Labels</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">What is a label?</h4><span>A label is a human readable string that will store a reference</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Assembler labels</h4><span>:label using the following syntax in the assembler will tell code designer to store the current address.</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Disassembler labels</h4><span>The 4th column in the disassembler is for storing labels. A label will define the address of the current row</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Sharing labels between projects</h4><span>When an assembler window and a disassembler window are open the labels are automatically shared.</span></li>
+    </ul>
+    <h2 class="text-center">Disassembler </h2>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Open a memory dump / .bin</h4><span>FIle &gt; Open &gt; select a .bin file </span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">String dumper</h4><span>The string dumper will search for available strings in the memory dump and allow a person to search through the results. Results will then be displayed in byte formatting in the disassembler.</span></li>
+        <li class="list-group-item">
+            <h4 class="list-group-item-heading">Labels manager</h4><span>A code list containing only off codes and labels can be placed in the same folder as the .exe. This file should be named the same as the .bin file opened and contain a .txt extension. Code designer can then try and parse that list and display labels on the addresses given. Code designer will also allow a person to mark an address with labels. These labels will automatically get appended to the off code list and saved.</span></li>
+        <li
+        class="list-group-item">
+            <h4 class="list-group-item-heading">Comments </h4><span>Any address can contain a comment. Comments are in the 5th column of the assembler. I tend to use this option when id like to describe the args to a function that has been mapped</span></li>
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">F9 keypress</h4><span>This will change the formatting of an address to a .byte</span></li>
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">F10 keypress</h4><span>This will change the formatting of an address to a .halfword</span></li>
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">F11 keypress</h4><span>This will change the formatting of an address to a .word</span></li>
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">F12 keypress</h4><span>This will set the formatting to use the assembler and syntax highlight the operation</span></li>
+    </ul>
+    <section class="features"></section>
+    <footer class="site-footer"></footer>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

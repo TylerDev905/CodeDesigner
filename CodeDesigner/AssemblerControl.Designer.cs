@@ -51,7 +51,7 @@
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -70,9 +70,8 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -83,7 +82,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.rtCode);
             this.splitContainer1.Size = new System.Drawing.Size(887, 347);
-            this.splitContainer1.SplitterDistance = 700;
+            this.splitContainer1.SplitterDistance = 665;
             this.splitContainer1.SplitterWidth = 16;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -107,6 +106,7 @@
             this.fstSource.CaretColor = System.Drawing.SystemColors.ActiveCaption;
             this.fstSource.CharHeight = 18;
             this.fstSource.CharWidth = 9;
+            this.fstSource.CurrentLineColor = System.Drawing.SystemColors.Highlight;
             this.fstSource.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.fstSource.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
             this.fstSource.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -115,12 +115,12 @@
             this.fstSource.IsReplaceMode = false;
             this.fstSource.LineNumberColor = System.Drawing.Color.DimGray;
             this.fstSource.Location = new System.Drawing.Point(0, 0);
-            this.fstSource.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.fstSource.Margin = new System.Windows.Forms.Padding(4);
             this.fstSource.Name = "fstSource";
             this.fstSource.Paddings = new System.Windows.Forms.Padding(0);
             this.fstSource.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.fstSource.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fstSource.ServiceColors")));
-            this.fstSource.Size = new System.Drawing.Size(700, 347);
+            this.fstSource.Size = new System.Drawing.Size(665, 347);
             this.fstSource.TabIndex = 0;
             this.fstSource.Text = "\r\n";
             this.fstSource.Zoom = 100;
@@ -134,9 +134,9 @@
             this.rtCode.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtCode.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.rtCode.Location = new System.Drawing.Point(0, 0);
-            this.rtCode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rtCode.Margin = new System.Windows.Forms.Padding(4);
             this.rtCode.Name = "rtCode";
-            this.rtCode.Size = new System.Drawing.Size(171, 347);
+            this.rtCode.Size = new System.Drawing.Size(206, 347);
             this.rtCode.TabIndex = 2;
             this.rtCode.Text = "";
             // 
@@ -166,12 +166,12 @@
             this.fstConsole.IsReplaceMode = false;
             this.fstConsole.LineNumberColor = System.Drawing.Color.DimGray;
             this.fstConsole.Location = new System.Drawing.Point(0, 0);
-            this.fstConsole.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.fstConsole.Margin = new System.Windows.Forms.Padding(4);
             this.fstConsole.Name = "fstConsole";
             this.fstConsole.Paddings = new System.Windows.Forms.Padding(0);
             this.fstConsole.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             this.fstConsole.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("fstConsole.ServiceColors")));
-            this.fstConsole.Size = new System.Drawing.Size(887, 96);
+            this.fstConsole.Size = new System.Drawing.Size(887, 94);
             this.fstConsole.TabIndex = 5;
             this.fstConsole.Zoom = 100;
             this.fstConsole.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.fstConsole_TextChanged);

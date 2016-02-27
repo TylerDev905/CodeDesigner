@@ -12,6 +12,21 @@
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +46,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -69,6 +88,12 @@
     <Compile Include="AssemblerControl.Designer.cs">
       <DependentUpon>AssemblerControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="BMSEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BMSEditorControl.Designer.cs">
+      <DependentUpon>BMSEditorControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="DisassemblerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -77,6 +102,12 @@
     </Compile>
     <Compile Include="DisassemblerGrid.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FormAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAbout.Designer.cs">
+      <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
@@ -90,11 +121,11 @@
     <Compile Include="FormHistory.Designer.cs">
       <DependentUpon>FormHistory.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormSearch.cs">
+    <Compile Include="FormLabels.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormSearch.Designer.cs">
-      <DependentUpon>FormSearch.cs</DependentUpon>
+    <Compile Include="FormLabels.Designer.cs">
+      <DependentUpon>FormLabels.cs</DependentUpon>
     </Compile>
     <Compile Include="FormStrings.cs">
       <SubType>Form</SubType>
@@ -110,6 +141,9 @@
     <Compile Include="MipsSourceModels.cs" />
     <Compile Include="MipsSource.cs" />
     <Compile Include="Mips32.cs" />
+    <Compile Include="ProjectTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Statements.cs" />
     <Compile Include="Parse.cs" />
     <Compile Include="Program.cs" />
@@ -122,8 +156,14 @@
     <EmbeddedResource Include="AssemblerControl.resx">
       <DependentUpon>AssemblerControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BMSEditorControl.resx">
+      <DependentUpon>BMSEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DisassemblerControl.resx">
       <DependentUpon>DisassemblerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
@@ -131,8 +171,8 @@
     <EmbeddedResource Include="FormHistory.resx">
       <DependentUpon>FormHistory.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormSearch.resx">
-      <DependentUpon>FormSearch.cs</DependentUpon>
+    <EmbeddedResource Include="FormLabels.resx">
+      <DependentUpon>FormLabels.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormStrings.resx">
       <DependentUpon>FormStrings.cs</DependentUpon>
@@ -156,12 +196,28 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon %281%29.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

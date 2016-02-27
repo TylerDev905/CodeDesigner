@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
+using System;
 
 
 namespace CodeDesigner
@@ -7,8 +8,8 @@ namespace CodeDesigner
 
     class TabControlEx : TabControl
     {
-        public string pathCloseImg = "\\images\\close.png";
-        public string onCloseMsg = "Would you like to Close this Tab?";
+        public string pathCloseImg = Environment.CurrentDirectory + @"\images\close.png";
+        public string onCloseMsg = "Would you like to close this tab?";
 
         public TabControlEx()
         {
@@ -67,7 +68,7 @@ namespace CodeDesigner
                 {
                     if (MessageBox.Show(onCloseMsg, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        TabPages.RemoveAt(i);
+                        TabPages[i].Dispose();
                         break;
                     }
                 }
