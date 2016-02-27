@@ -141,26 +141,22 @@ namespace CodeDesigner
 
                 case Keys.F9:
                     RowType = AddRowType.Insert;
-                    RemoveDisassembledRow();
-                    AddDisassembledRow(AddressType.Word, address);
+                    RemoveDisassembledRow(AddressType.Word);
                     break;
 
                 case Keys.F10:
                     RowType = AddRowType.Insert;
-                    RemoveDisassembledRow();
-                    AddDisassembledRow(AddressType.Halfword, address);
+                    RemoveDisassembledRow(AddressType.Halfword);
                     break;
 
                 case Keys.F11:
                     RowType = AddRowType.Insert;
-                    RemoveDisassembledRow();
-                    AddDisassembledRow(AddressType.Operation, address);
+                    RemoveDisassembledRow(AddressType.Operation);
                     break;
 
                 case Keys.F12:
                     RowType = AddRowType.Insert;
-                    RemoveDisassembledRow();
-                    AddDisassembledRow(AddressType.Byte, address);
+                    RemoveDisassembledRow(AddressType.Byte);
                     break;
 
             }
@@ -384,39 +380,63 @@ namespace CodeDesigner
             }
         }
 
-        public void RemoveDisassembledRow()
+        public void RemoveDisassembledRow(AddressType type)
         {
             var selected = dgvDisassembler.SelectedRows[0];
             var index = selected.Index;
             var value = selected.Cells[2].Value.ToString();
             var data = selected.Cells[1].Value.ToString();
 
+            var address = 0;
+
             if (value.Contains(".byte"))
             {
                 if (data.StartsWith("------"))
+                {
+                    address = Convert.ToInt32(dgvDisassembler.Rows[index].Cells[0].Value.ToString(), 16);
                     RemoveRows(index, 4);
+                }
                 else if (data.StartsWith("----"))
+                {
+                    address = Convert.ToInt32(dgvDisassembler.Rows[index - 1].Cells[0].Value.ToString(), 16);
                     RemoveRows(index - 1, 4);
+                }
                 else if (data.StartsWith("--"))
+                {
+                    address = Convert.ToInt32(dgvDisassembler.Rows[index - 2].Cells[0].Value.ToString(), 16);
                     RemoveRows(index - 2, 4);
+                }
                 else if (data.EndsWith("-------"))
+                {
+                    address = Convert.ToInt32(dgvDisassembler.Rows[index - 3].Cells[0].Value.ToString(), 16);
                     RemoveRows(index - 3, 4);
+                }
             }
-
             else if (value.Contains(".halfword"))
             {
                 if (data.StartsWith("----"))
+                {
+                    address = Convert.ToInt32(dgvDisassembler.Rows[index].Cells[0].Value.ToString(), 16);
                     RemoveRows(index, 2);
+                }
                 else if (data.EndsWith("----"))
+                {
+                    address = Convert.ToInt32(dgvDisassembler.Rows[index - 1].Cells[0].Value.ToString(), 16);
                     RemoveRows(index - 1, 2);
+                }
+            }
+            else
+            {
+                address = Convert.ToInt32(dgvDisassembler.Rows[index].Cells[0].Value.ToString(), 16);
+                RemoveRows(index, 1);
             }
 
-            RemoveRows(index, 1);
+            AddDisassembledRow(type, address);
         }
 
         public void RemoveRows(int index, int count)
         {
-            for(var i = 0; i < count - 1; i++)
+            for(var i = 0; i < count; i++)
                 this.dgvDisassembler.Rows.RemoveAt(index);
         }
 
