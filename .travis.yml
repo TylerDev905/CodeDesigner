@@ -1,0 +1,6 @@
+language: csharp
+solution: CodeDesigner.sln
+before_script:
+  - nuget restore CodeDesigner.sln
+script:
+  - xbuild /p:Configuration=Debug CodeDesigner.sln
