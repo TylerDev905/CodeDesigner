@@ -49,17 +49,6 @@ hecode :label
 ###Print will take a string and convert it into hexidecimal
 print "hello world"
 
-##ToDO
-* Open/Saving for bother the assembler and disassembler
-* Intellisense
-* Read/Write to emulator memory
-* Error markers for the assembler
-* pageUp/pageDown/scrolling for the diassembler
-* import command for the assembler
-* Sharing labels and comments between windows
-* String dumper
-* Disassembler address formating for .Byte .HalfWord .Word .Float .Double .Quad
-
 <img src="http://i.imgur.com/IS3dxgX.png"></img>
 <img src="http://i.imgur.com/hYVFDx3.png"></img>
 <img src="http://i.imgur.com/IHQw3It.png"></img>
