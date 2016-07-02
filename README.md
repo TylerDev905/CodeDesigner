@@ -1,7 +1,7 @@
 # CodeDesigner
 
 ##Status
-Almost ready for a proper release.
+Small bugs but overall works pretty good. 
 
 ## Project Details
 Code designer is a tool that can be used to assemble and disassemble Mips32 assembly code. Most if not all mips assembly instructions are supported as well as code designer syntax. Code designer syntax is a small set of commands that can make writting assembly much easier.
